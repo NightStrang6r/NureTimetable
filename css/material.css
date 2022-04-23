@@ -52,8 +52,8 @@ Colors: Use the following - https://www.google.com/design/spec/style/color.html#
 
 /* Remove the header border from Schedule */
 .fc td, .fc th {
-    border-style: none !important;
-    border-width: 1px !important;
+    /*border-style: none !important;
+    border-width: 1px !important;*/
     padding: 0 !important;
     vertical-align: top !important;
 }

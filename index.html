@@ -2,6 +2,8 @@
 <html lang='en'>
     <head>
         <meta charset='utf-8' />
+        <title>Nure Timetable</title>
+        <link rel="shortcut icon" href="data:image/svg+xml,<svg xmlns=%22http://www.w3.org/2000/svg%22 viewBox=%220 0 100 100%22><text y=%22.9em%22 font-size=%2290%22>📅</text></svg>" />
         <link href='lib/main.css' rel='stylesheet' />
         <link href='css/material.css' rel='stylesheet' />
         <link href='css/style.css' rel='stylesheet' />
@@ -9,6 +11,27 @@
         <script src='js/script.js'></script>
     </head>
     <body>
+        <header>
+            <div class="burger">
+                <svg focusable="false" viewBox="0 0 24 24">
+                    <path d="M3 18h18v-2H3v2zm0-5h18v-2H3v2zm0-7v2h18V6H3z"></path>
+                </svg>
+            </div>
+            <div class="logo">
+                <img class="logo-img" src="assets/logo.png" />
+                <div class="logo-text">NureTimetable</div>
+            </div>
+            <div class="select-group">
+                <div class="select">
+                    <select>
+                        <option value="1">ПЗПІ-21-3</option>
+                        <option value="2">ПЗПІ-21-4</option>
+                        <option value="3">ПЗПІ-21-5</option>
+                    </select>
+                </div>
+            </div>
+        </header>
+
         <div id='calendar-container'>
             <div id='calendar'></div>
         </div>
