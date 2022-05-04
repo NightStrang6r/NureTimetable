@@ -1,0 +1,31 @@
+const fetch = require('node-fetch');
+const URL = require('./URL.js');
+const iconv = require('iconv-lite');
+
+class API {
+    constructor() {
+        API.URL = new URL();
+    }
+    
+    async getTimetable(groupId) {
+        const url = API.URL.getTimetableUrl(groupId);
+        const response = await fetch(url);
+        const data = this.decode(response);
+        return data;
+    }
+
+    async getGroups() {
+        const url = API.URL.getGroupsUrl();
+        const response = await fetch(url);
+        const data = this.decode(response);
+        return data;
+    }
+
+    async decode(response) {
+        const buffer = await response.buffer();
+        const data = iconv.encode(iconv.decode(buffer, 'win1251'), 'utf8');
+        return data;
+    }
+}
+
+module.exports = API;

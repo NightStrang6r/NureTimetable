@@ -1,10 +1,12 @@
+import Calendar from './calendar.js';
+
 let calendar;
 let timetable;
 
 document.addEventListener('DOMContentLoaded', init);
 
 function init() {
-    calendar = initCalendar();
+    calendar = new Calendar('#calendar');
     main();
 }
 
@@ -19,43 +21,6 @@ async function main() {
     timetable.events.forEach(event => {
         addEvent(event);
     });
-}
-
-function initCalendar() {
-    const calendarEl = document.querySelector('#calendar');
-    const options = {
-        headerToolbar: {
-            left: 'prev,next today',
-            center: 'title',
-            right: 'dayGridMonth,timeGridWeek,timeGridDay,listMonth'
-        },
-        buttonText: {
-            today:    'сегодня',
-            month:    'месяц',
-            week:     'неделя',
-            day:      'день',
-            list:     'список'
-        },
-        initialView: 'timeGridWeek',
-        locale: "ru",
-        firstDay: 1,
-        height: '100%',
-        nowIndicator: true,
-        slotMinTime: "08:00:00",
-        slotMaxTime: "18:00:00",
-        slotDuration: "00:25:00",
-        slotLabelFormat: {
-            hour: 'numeric',
-            minute: '2-digit',
-            omitZeroMinute: false,
-            meridiem: 'short'
-        }
-    }
-
-    const calendar = new FullCalendar.Calendar(calendarEl, options);
-
-    calendar.render();
-    return calendar;
 }
 
 async function getAllGroups() {
@@ -78,7 +43,7 @@ async function getAllGroups() {
 }
 
 async function getTimetable(groupId) {
-    const url = `/api/get/?group_id=${groupId}`;
+    const url = `/get?groupId=${groupId}`;
     const options = {
         method: 'GET'
     };
@@ -145,3 +110,28 @@ function addEvent(event) {
         color: color
     });
 }
+
+jQuery(document).ready(function($){
+    $('.cd-popup').removeClass('d-none');
+
+	//open popup
+	$('.cd-popup-trigger').on('click', function(event){
+		event.preventDefault();
+		$('.cd-popup').addClass('is-visible');
+	});
+	
+	//close popup
+	$('.cd-popup').on('click', function(event){
+		if( $(event.target).is('.cd-popup-close') || $(event.target).is('.cd-popup') ) {
+			event.preventDefault();
+			$(this).removeClass('is-visible');
+		}
+	});
+
+	//close popup when clicking the esc keyboard button
+	$(document).keyup(function(event){
+    	if(event.which=='27'){
+    		$('.cd-popup').removeClass('is-visible');
+	    }
+    });
+});

@@ -1,0 +1,78 @@
+<!DOCTYPE html>
+<html lang='en'>
+    <head>
+        <meta charset='utf-8' />
+        <title>Nure Timetable</title>
+        <link rel="shortcut icon" href="data:image/svg+xml,<svg xmlns=%22http://www.w3.org/2000/svg%22 viewBox=%220 0 100 100%22><text y=%22.9em%22 font-size=%2290%22>📅</text></svg>" />
+        <link href='lib/main.css' rel='stylesheet' />
+        <link href='css/material.css' rel='stylesheet' />
+        <link href='css/style.css' rel='stylesheet' />
+    </head>
+    <body>
+        <!-- Header -->
+        <header>
+            <div class="burger">
+                <svg focusable="false" viewBox="0 0 24 24">
+                    <path d="M3 18h18v-2H3v2zm0-5h18v-2H3v2zm0-7v2h18V6H3z"></path>
+                </svg>
+            </div>
+            <div class="logo">
+                <img class="logo-img" src="assets/logo.png" />
+                <div class="logo-text">NureTimetable</div>
+            </div>
+            <div class="select-group">
+                <div class="select">
+                    <select>
+                        <option value="1">ПЗПІ-21-3</option>
+                        <option value="2">ПЗПІ-21-4</option>
+                        <option value="3">ПЗПІ-21-5</option>
+                    </select>
+                </div>
+            </div>
+            <div class="menu-right">
+                <div class="add cd-popup-trigger">
+                    <img class="add-img" src="assets/plus.png" />
+                </div>
+            </div>
+        </header>
+        <!-- /Header -->
+
+        <!-- Calendar -->
+        <div id='calendar-container'>
+            <div id='calendar'></div>
+        </div>
+        <!-- /Calendar -->
+
+        <!-- Popup -->
+        <div class="cd-popup d-none" role="alert">
+            <div class="cd-popup-container">
+                <p>Добавление расписания</p>
+                <ul class="tab-header">
+                    <li class="tab-header__item js-tab-trigger active" data-tab="1">
+                        Группы
+                    </li>
+                    <li class="tab-header__item js-tab-trigger" data-tab="2">
+                        Преподаватели
+                    </li>
+                    <li class="tab-header__item js-tab-trigger" data-tab="3">
+                        Аудитории
+                    </li>
+                </ul>
+                <div class="popup-input">
+                    <input type="text" placeholder="Название группы"/>
+                </div>
+                <div class="popup-list">
+                    <ul>
+                        <li></li>
+                    </ul>
+                </div>
+                <a class="cd-popup-close img-replace"></a>
+            </div>
+        </div>
+        <!-- /Popup -->
+
+        <script src='lib/jquery.min.js'></script>
+        <script src='lib/main.js'></script>
+        <script type="module" src='js/script.js'></script>
+    </body>
+</html>
