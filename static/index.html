@@ -7,6 +7,10 @@
         <link href='lib/main.css' rel='stylesheet' />
         <link href='css/material.css' rel='stylesheet' />
         <link href='css/style.css' rel='stylesheet' />
+
+        <script src='lib/jquery.min.js'></script>
+        <script src='lib/main.js'></script>
+        <script src='js/script.js' type='module'></script>
     </head>
     <body>
         <!-- Header -->
@@ -37,6 +41,12 @@
         </header>
         <!-- /Header -->
 
+        <!-- Preloader -->
+        <div class="preloader">
+            <img id="preloader-img" src="assets/loaders/loader-1.gif" />
+        </div>
+        <!-- /Preloader -->
+
         <!-- Calendar -->
         <div id='calendar-container'>
             <div id='calendar'></div>
@@ -59,20 +69,23 @@
                     </li>
                 </ul>
                 <div class="popup-input">
-                    <input type="text" placeholder="Название группы"/>
+                    <input type="text" placeholder="Поиск..."/>
                 </div>
                 <div class="popup-list">
-                    <ul>
-                        <li></li>
-                    </ul>
+                    <div class="list-item">ПЗПІ-21-3</div>
+                    <div class="list-item">ПЗПІ-21-4</div>
+                    <div class="list-item">ПЗПІ-21-3</div>
+                    <div class="list-item">ПЗПІ-21-4</div>
+                    <div class="list-item">ПЗПІ-21-3</div>
+                    <div class="list-item">ПЗПІ-21-4</div>
+                    <div class="list-item">ПЗПІ-21-3</div>
+                    <div class="list-item">ПЗПІ-21-4</div>
+                    <div class="list-item">ПЗПІ-21-3</div>
+                    <div class="list-item">ПЗПІ-21-4</div>
                 </div>
                 <a class="cd-popup-close img-replace"></a>
             </div>
         </div>
         <!-- /Popup -->
-
-        <script src='lib/jquery.min.js'></script>
-        <script src='lib/main.js'></script>
-        <script type="module" src='js/script.js'></script>
     </body>
 </html>

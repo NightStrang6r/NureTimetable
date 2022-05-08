@@ -31,7 +31,7 @@ header {
     height: 40px;
     padding: 8px;
     margin: 0px;
-    box-shadow: 0px 5px 1px grey;
+    /*box-shadow: 0px 5px 1px grey;*/
     display: inline-flex;
     align-items: center;
 }
@@ -66,7 +66,7 @@ header {
 
 .logo-text {
     display: inline-block;
-    color: #5f6368;
+    color: #434649;
     margin-left: 10px;
     font-size: 22px;
 }
@@ -179,7 +179,7 @@ select::-ms-expand {
     -o-transform: translateY(-40px);
     transform: translateY(-40px);
     /* Force Hardware Acceleration in WebKit */
-    -webkit-backface-visibility: hidden;
+    /*-webkit-backface-visibility: hidden;*/
     -webkit-transition-property: -webkit-transform;
     -moz-transition-property: -moz-transform;
     transition-property: transform;
@@ -280,8 +280,9 @@ select::-ms-expand {
       margin: 8em auto;
     }
 }
+
 .d-none {
-    display: none;
+    display: none !important;
 }
 
 
@@ -343,6 +344,38 @@ select::-ms-expand {
 }
 
 .popup-list {
+    margin-top: 15px;
     max-height: 300px;
     overflow-y: auto;
+    text-align: center;
+}
+
+.list-item {
+    display: inline-flex;
+    width: 70%;
+    justify-content: center;
+    align-items: center;
+    padding: 10px;
+    cursor: pointer;
+}
+
+.list-item:hover {
+    background-color: rgb(221, 221, 221);
+}
+
+.list-item-selected {
+    background-color: rgb(104, 209, 73);
+}
+
+/* PRELOADER */
+
+.preloader {
+    display: inline-flex;
+    justify-content: center;
+    align-items: center;
+    position: fixed;
+    top: 50px;
+    left: 0;
+    right: 0;
+    bottom: 0;
 }

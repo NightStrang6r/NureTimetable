@@ -1,15 +1,29 @@
 const express = require('express');
 const path = require('path');
+const fs = require('fs');
 const API = require('./API.js');
 
 class Router {
     constructor(staticPath) {
-        Router.path = path.resolve(staticPath);
+        Router.path = this.getStaticPath(staticPath);
         Router.API = new API();
     }
 
+    getStaticPath(staticPath) {
+        if(fs.existsSync(staticPath)) {
+            return path.resolve(staticPath);
+        } else if(fs.existsSync(`../${staticPath}`)) {
+            return path.resolve(`../${staticPath}`);
+        } else {
+            throw new Error('No static path found!');
+        }
+    }
+
     onIndex(req, res) {
-        res.sendFile(`${Router.path}/index.html`);
+        let index = fs.readFileSync(`${Router.path}/index.html`).toString();
+        index = index.replace('loader-1.gif', `loader-${Math.floor(Math.random() * (6 - 1 + 1)) + 1}.gif`);
+        res.send(index);
+        //res.sendFile(`${Router.path}/index.html`);
     }
 
     static() {

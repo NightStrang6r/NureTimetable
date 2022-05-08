@@ -8,7 +8,7 @@ class Server {
     }
     
     run() {
-        const router = new Router('../static');
+        const router = new Router('static');
 
         this.server.get('/', router.onIndex);
         this.server.get('/get', router.getTimetable);
