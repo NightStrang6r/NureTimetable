@@ -20,10 +20,10 @@ class Router {
     }
 
     onIndex(req, res) {
-        let index = fs.readFileSync(`${Router.path}/index.html`).toString();
-        index = index.replace('loader-1.gif', `loader-${Math.floor(Math.random() * (6 - 1 + 1)) + 1}.gif`);
-        res.send(index);
-        //res.sendFile(`${Router.path}/index.html`);
+        //let index = fs.readFileSync(`${Router.path}/index.html`).toString();
+        //index = index.replace('loader-1.gif', `loader-${Math.floor(Math.random() * (6 - 1 + 1)) + 1}.gif`);
+        //res.send(index);
+        res.sendFile(`${Router.path}/index.html`);
     }
 
     static() {
@@ -45,6 +45,20 @@ class Router {
 
     async getGroups(req, res) {
         const data = await Router.API.getGroups();
+        res.setHeader('content-type', 'application/json');
+        res.send(data);
+    }
+
+    async getTeachers(req, res) {
+        let data = await Router.API.getTeachers();
+        data = data.toString('utf8');
+        data = data.replace(']}]}]}', ']}]}]}]}'); // This fixes cist json encoding error
+        res.setHeader('content-type', 'application/json');
+        res.send(data);
+    }
+
+    async getAudiences(req, res) {
+        const data = await Router.API.getAudiences();
         res.setHeader('content-type', 'application/json');
         res.send(data);
     }

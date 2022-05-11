@@ -1,6 +1,18 @@
 export default class API {
+    async getTimetable(groupId) {
+        const url = `/get?groupId=${groupId}`;
+        const options = {
+            method: 'GET'
+        };
+    
+        const res = await fetch(url, options);
+        const json = await res.json();
+    
+        return json;
+    }
+
     async getAllGroups() {
-        const url = '/api/groups/';
+        const url = '/getGroups';
         const options = {
             method: 'GET'
         };
@@ -17,9 +29,9 @@ export default class API {
     
         return groups;
     }
-    
-    async getTimetable(groupId) {
-        const url = `/get?groupId=${groupId}`;
+
+    async getAllTeachers() {
+        const url = '/getTeachers';
         const options = {
             method: 'GET'
         };
@@ -27,6 +39,33 @@ export default class API {
         const res = await fetch(url, options);
         const json = await res.json();
     
-        return json;
+        let teachers = [];
+        json.university.faculties.forEach(faculty => {
+            faculty.departments.forEach(department => {
+                if(department.teachers) {
+                    teachers = teachers.concat(department.teachers);
+                }
+            });
+        });
+    
+        return teachers;
+    }
+
+    async getAllAudiences() {
+        const url = '/getAudiences';
+        const options = {
+            method: 'GET'
+        };
+    
+        const res = await fetch(url, options);
+        const json = await res.json();
+    
+        let audiences = [];
+        console.log(json);
+        json.university.buildings.forEach(building => {
+            audiences = audiences.concat(building.auditories);
+        });
+    
+        return audiences;
     }
 }

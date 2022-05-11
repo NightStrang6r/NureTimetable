@@ -30,4 +30,8 @@ export default class Parser {
     
         return type;
     }
+
+    getAuditoryById(id) {
+        
+    }
 }

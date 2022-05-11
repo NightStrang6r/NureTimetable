@@ -20,7 +20,7 @@
                     <path d="M3 18h18v-2H3v2zm0-5h18v-2H3v2zm0-7v2h18V6H3z"></path>
                 </svg>
             </div>
-            <div class="logo">
+            <div class="logo" onclick="window.location.reload()">
                 <img class="logo-img" src="assets/logo.png" />
                 <div class="logo-text">NureTimetable</div>
             </div>
@@ -43,7 +43,7 @@
 
         <!-- Preloader -->
         <div class="preloader">
-            <img id="preloader-img" src="assets/loaders/loader-1.gif" />
+            <img id="preloader-img" src="assets/loaders/loader-0.gif" />
         </div>
         <!-- /Preloader -->
 
@@ -57,31 +57,21 @@
         <div class="cd-popup d-none" role="alert">
             <div class="cd-popup-container">
                 <p>Добавление расписания</p>
-                <ul class="tab-header">
-                    <li class="tab-header__item js-tab-trigger active" data-tab="1">
+                <ul class="tab-header unselectable">
+                    <li class="tab-header-item active" data-tab="groups">
                         Группы
                     </li>
-                    <li class="tab-header__item js-tab-trigger" data-tab="2">
+                    <li class="tab-header-item" data-tab="teachers">
                         Преподаватели
                     </li>
-                    <li class="tab-header__item js-tab-trigger" data-tab="3">
+                    <li class="tab-header-item" data-tab="audiences">
                         Аудитории
                     </li>
                 </ul>
                 <div class="popup-input">
                     <input type="text" placeholder="Поиск..."/>
                 </div>
-                <div class="popup-list">
-                    <div class="list-item">ПЗПІ-21-3</div>
-                    <div class="list-item">ПЗПІ-21-4</div>
-                    <div class="list-item">ПЗПІ-21-3</div>
-                    <div class="list-item">ПЗПІ-21-4</div>
-                    <div class="list-item">ПЗПІ-21-3</div>
-                    <div class="list-item">ПЗПІ-21-4</div>
-                    <div class="list-item">ПЗПІ-21-3</div>
-                    <div class="list-item">ПЗПІ-21-4</div>
-                    <div class="list-item">ПЗПІ-21-3</div>
-                    <div class="list-item">ПЗПІ-21-4</div>
+                <div class="popup-list unselectable">
                 </div>
                 <a class="cd-popup-close img-replace"></a>
             </div>

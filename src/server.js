@@ -13,6 +13,8 @@ class Server {
         this.server.get('/', router.onIndex);
         this.server.get('/get', router.getTimetable);
         this.server.get('/getGroups', router.getGroups);
+        this.server.get('/getTeachers', router.getTeachers);
+        this.server.get('/getAudiences', router.getAudiences);
         this.server.use(router.static());
         
         this.server.listen(Server.port, this.onListen(Server.port));

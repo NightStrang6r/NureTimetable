@@ -304,7 +304,7 @@ select::-ms-expand {
 }
  
  /* Стили для вкладки */
-.tab-header__item {
+.tab-header-item {
     padding: 10px 20px;
     margin-right: 5px;
     cursor: pointer;
@@ -313,7 +313,7 @@ select::-ms-expand {
 }
  
  /* Стили для активной вкладки */
-.tab-header__item.active {
+.tab-header-item.active {
     color: red;
     position: relative;
     background-color: #fff;
@@ -364,7 +364,17 @@ select::-ms-expand {
 }
 
 .list-item-selected {
-    background-color: rgb(104, 209, 73);
+    background-color: rgb(104, 209, 73) !important;
+}
+
+.unselectable {
+    -webkit-touch-callout: none; /* iOS Safari */
+    -webkit-user-select: none;   /* Chrome/Safari/Opera */
+    -khtml-user-select: none;    /* Konqueror */
+    -moz-user-select: none;      /* Firefox */
+    -ms-user-select: none;       /* Internet Explorer/Edge */
+    user-select: none;           /* Non-prefixed version, currently
+                                    not supported by any browser */
 }
 
 /* PRELOADER */
@@ -378,4 +388,8 @@ select::-ms-expand {
     left: 0;
     right: 0;
     bottom: 0;
+}
+
+#preloader-img {
+    max-width: 500px;
 }
