@@ -7,7 +7,7 @@
   "name": "nuretimetable",
   "description": "",
   "version": "1.0.0",
-  "main": "index.js",
+  "main": "src/index.js",
   "devDependencies": {},
   "scripts": {
     "start": "node src/index.js"

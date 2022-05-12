@@ -45,6 +45,14 @@ export default class API {
                 if(department.teachers) {
                     teachers = teachers.concat(department.teachers);
                 }
+
+                if(department.departments) {
+                    department.departments.forEach(department2 => {
+                        if(department2.teachers) {
+                            teachers = teachers.concat(department2.teachers);
+                        }
+                    });
+                }
             });
         });
     

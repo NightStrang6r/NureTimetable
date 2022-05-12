@@ -8,8 +8,8 @@ export default class Preloader {
 
     async start() {
         preloaderImg.classList.remove('d-none');
-        preloaderImg.src = this.getRandomPreloader();
-        console.log(typeof preloaderImg);
+        //preloaderImg.src = this.getRandomPreloader();
+        //console.log(typeof preloaderImg);
     }
 
     stop() {
