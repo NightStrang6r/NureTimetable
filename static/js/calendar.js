@@ -10,7 +10,7 @@ export default class Calendar {
             headerToolbar: {
                 left: 'prev,next today',
                 center: 'title',
-                right: 'dayGridMonth,timeGridWeek,timeGridDay,listMonth'
+                right: 'dayGridMonth,timeGridWeek,timeGridDay'
             },
             buttonText: {
                 today:    'сегодня',
@@ -36,9 +36,10 @@ export default class Calendar {
         }
     
         calendar = new FullCalendar.Calendar(calendarEl, options);
-        calendar.render();
+    }
 
-        //return calendar;
+    render() {
+        calendar.render();
     }
 
     setTimetable(timetab) {

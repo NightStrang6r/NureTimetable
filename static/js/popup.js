@@ -1,8 +1,9 @@
 import Storage from './storage.js';
 import ListController from './listController.js';
 
-let popupEl, popupTriggerEl, popupListEl, popupTabHeaderEl;
+let popupEl, popupTriggerEl, popupListEl, popupTabHeaderEl, popupSaveEl;
 let storage, listController;
+let close, removeTabSelection;
 
 export default class Popup {
     constructor() {
@@ -10,9 +11,12 @@ export default class Popup {
         popupTriggerEl = document.querySelector('.cd-popup-trigger');
         popupListEl = document.querySelector('.popup-list');
         popupTabHeaderEl = document.querySelector('.tab-header');
+        popupSaveEl = document.querySelector('.save-button');
 
         storage = new Storage();
-        listController = new ListController(popupListEl);
+
+        close = this.close;
+        removeTabSelection = this.removeTabSelection;
 
         this.setupListeners();
     }
@@ -20,29 +24,55 @@ export default class Popup {
     setupListeners() {
         popupEl.classList.remove('d-none');
         popupTriggerEl.addEventListener('click', this.open);
-        popupEl.addEventListener('click', this.close);
-        document.addEventListener('keyup', this.close);
+        popupEl.addEventListener('click', this.closeEvent);
+        document.addEventListener('keyup', this.closeEvent);
+        popupSaveEl.addEventListener('click', this.save);
 
         popupTabHeaderEl.addEventListener('click', this.onTabClick);
-
-        popupListEl.addEventListener('click', this.onListClick);
     }
 
     async open(event) {
         event.preventDefault();
         popupEl.classList.add('is-visible');
 
+        removeTabSelection();
+        popupTabHeaderEl.children[0].classList.add('active');
+
+        listController = new ListController(popupListEl, storage);
+        popupListEl.innerHTML = '';
         let data = await storage.getAllGroups();
         listController.loadGroupsList(data);
     }
 
-    close(event) {
+    close() {
+        listController.setSelected([]);
+        popupEl.classList.remove('is-visible');
+        listController = null;
+    }
+
+    save() {
+        let selected = listController.getSelected();
+        storage.saveTimetables(selected);
+        close();
+    }
+
+    closeEvent(event) {
         if($(event.target).is('.cd-popup-close') || $(event.target).is('.cd-popup')) {
             event.preventDefault();
-            $(this).removeClass('is-visible');
+            close();
         }
+
         if(event.which == '27') {
-            $('.cd-popup').removeClass('is-visible');
+            close();
+        }
+    }
+
+    removeTabSelection() {
+        for(let i = 0; i < popupTabHeaderEl.children.length; i++) {
+            let tab = popupTabHeaderEl.children[i];
+            if(tab.className.includes('active')) {
+                tab.classList.remove('active');
+            }
         }
     }
 
@@ -52,13 +82,7 @@ export default class Popup {
 
         if(!tabItem.className.includes('tab-header-item')) return;
 
-        for(let i = 0; i < popupTabHeaderEl.children.length; i++) {
-            let tab = popupTabHeaderEl.children[i];
-            if(tab.className.includes('active')) {
-                tab.classList.remove('active');
-            }
-        }
-
+        removeTabSelection();
         tabItem.classList.add('active');
         let data;
 
@@ -76,21 +100,6 @@ export default class Popup {
                 data = await storage.getAllAudiences();
                 listController.loadAudiencesList(data);
                 break;
-        }
-    }
-
-    onListClick(event) {
-        event.preventDefault();
-        const listItem = event.target;
-
-        if(!listItem.className.includes('list-item')) return;
-
-        if(!listItem.className.includes('list-item-selected')) {
-            listItem.classList.add('list-item-selected');
-            console.log('added');
-        } else {
-            listItem.classList.remove('list-item-selected');
-            console.log('deleted');
         }
     }
 }

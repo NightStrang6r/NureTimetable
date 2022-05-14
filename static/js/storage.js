@@ -7,6 +7,16 @@ export default class Storage {
         this.groups = null;
     }
 
+    getTimetables() {
+        if(!localStorage.timetables) return [];
+        
+        return JSON.parse(localStorage.timetables);
+    }
+
+    saveTimetables(timetables) {
+        localStorage.timetables = JSON.stringify(timetables);
+    }
+
     async getTimetable(groupId) {
         if(!localStorage.timetable) {
             this.timetable = await api.getTimetable(groupId);

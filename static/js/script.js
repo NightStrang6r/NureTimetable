@@ -19,8 +19,12 @@ async function main() {
     
     let timetable = await storage.getTimetable(9291672);
 
+    let timetables = storage.getTimetables();
+    
+
     calendar.setTimetable(timetable);
     calendar.loadEvents(timetable.events);
+    calendar.render();
 
     preloader.stop();
 

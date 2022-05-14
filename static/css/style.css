@@ -167,6 +167,8 @@ select::-ms-expand {
 .cd-popup-container {
     position: relative;
     width: 90%;
+    height: auto;
+    padding-bottom: 1px;
     max-width: 600px;
     margin: 4em auto;
     background: #FFF;
@@ -375,6 +377,36 @@ select::-ms-expand {
     -ms-user-select: none;       /* Internet Explorer/Edge */
     user-select: none;           /* Non-prefixed version, currently
                                     not supported by any browser */
+}
+
+.popup-down {
+    margin-top: 15px;
+    margin-bottom: 30px;
+    text-align: right;
+}
+
+.button {
+    border: none;
+    border-radius: 4px;
+    color: white;
+    padding: 9px 18px;
+    text-align: center;
+    text-decoration: none;
+    display: inline-block;
+    font-size: 16px;
+    cursor: pointer;
+}
+
+.save-button {
+    background-color: #4CAF50;
+    margin-right: 21px;
+    border-radius: 4px;
+    padding: 9px 18px;
+    margin-right: 20px;
+}
+
+.save-button:hover {
+    background-color: #3c883e;
 }
 
 /* PRELOADER */
