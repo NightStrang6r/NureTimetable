@@ -42,6 +42,10 @@ export default class Calendar {
         calendar.render();
     }
 
+    destroy() {
+        calendar.destroy();
+    }
+
     setTimetable(timetab) {
         timetable = timetab;
     }
@@ -49,6 +53,13 @@ export default class Calendar {
     loadEvents(events) {
         events.forEach(async (event) => {
             this.addEvent(event);
+        });
+    }
+
+    removeEvents() {
+        let events = calendar.getEvents();
+        events.forEach((event) => {
+            event.remove();
         });
     }
 

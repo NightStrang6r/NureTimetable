@@ -1,6 +1,8 @@
 import API from './API.js';
 let api = new API();
 
+let onTimetablesSaved = null;
+
 export default class Storage {
     constructor() {
         this.timetable = null;
@@ -15,15 +17,31 @@ export default class Storage {
 
     saveTimetables(timetables) {
         localStorage.timetables = JSON.stringify(timetables);
+        onTimetablesSaved(timetables);
+    }
+
+    onTimetablesSaved(callback) {
+        onTimetablesSaved = callback;
     }
 
     async getTimetable(groupId) {
-        if(!localStorage.timetable) {
-            this.timetable = await api.getTimetable(groupId);
-            localStorage.timetable = JSON.stringify(this.timetable);
-        } else {
-            this.timetable = JSON.parse(localStorage.timetable);
-        }
+        /*let timetables = JSON.parse(localStorage.timetables);
+        timetables.forEach(timetable => {
+            if(timetable.type == "groups" && timetable.id == groupId) {
+                this.timetable = JSON.parse(timetable);
+                return this.timetable;
+            }
+        });*/
+
+        this.timetable = await api.getTimetable(groupId);
+
+        /*timetables.push({
+            type: "groups",
+            id: groupId, 
+            data: JSON.stringify(this.timetable)
+        });*/
+
+        //localStorage.timetables = JSON.stringify(timetables)
 
         return this.timetable;
     }
