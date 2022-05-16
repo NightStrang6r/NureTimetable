@@ -32,7 +32,8 @@ export default class Calendar {
                 minute: '2-digit',
                 omitZeroMinute: false,
                 meridiem: 'short'
-            }
+            },
+            eventClick: this.onEventClick
         }
     
         calendar = new FullCalendar.Calendar(calendarEl, options);
@@ -92,8 +93,41 @@ export default class Calendar {
             title: `${subject.brief} ${type.short_name} ${auditory}`,
             start: event.start_time * 1000,
             end: event.end_time * 1000,
-            description: type.short_name,
-            color: color
+            color: color,
+            extendedProps: {
+                subject: subject,
+                type: type,
+                auditory: auditory,
+                teachers: event.teachers,
+                groups: event.groups
+            }
         });
+    }
+
+    onEventClick(info) {
+        let parser = new Parser(timetable);
+
+        console.log(info.event);
+        let properties = info.event.extendedProps;
+
+        let title = properties.subject.title;
+        let type = properties.type.full_name;
+        let auditory = properties.auditory;
+        let groups = '';
+        let teachers = '';
+        let day = info.event.start.toLocaleString('ru-RU', { weekday: 'long', year: 'numeric', month: 'numeric', day: 'numeric' });
+        let start = info.event.start.toLocaleString('ru-RU', { hour: 'numeric', minute: 'numeric' });
+        let end = info.event.end.toLocaleString('ru-RU', { hour: 'numeric', minute: 'numeric' });
+        let lessonsCount = parser.countLessons(properties.subject.id, properties.type.id, properties.teachers);
+
+        properties.teachers.forEach(id => {
+            teachers += `${parser.getTeacherById(id).full_name} `;
+        });
+
+        properties.groups.forEach(id => {
+            groups += `${parser.getGroupById(id).name} `;
+        });
+
+        alert(`${title}\n\nТип: ${type} (?/${lessonsCount})\nАудитория: ${auditory}\nПреподаватели: ${teachers}\nГруппы: ${groups}\nДень: ${day}\nВремя: ${start} - ${end}`);
     }
 } 

@@ -21,9 +21,9 @@ export default class Parser {
     getTypeById(id) {
         let type = {};
         
-        timetable.types.forEach(typef => {
-            if(typef.id == id) {
-                type = typef;
+        timetable.types.forEach(tp => {
+            if(tp.id == id) {
+                type = tp;
                 return;
             }
         });
@@ -31,7 +31,41 @@ export default class Parser {
         return type;
     }
 
-    getAuditoryById(id) {
+    getGroupById(id) {
+        let group = {};
         
+        timetable.groups.forEach(gr => {
+            if(gr.id == id) {
+                group = gr;
+                return;
+            }
+        });
+    
+        return group;
+    }
+
+    getTeacherById(id) {
+        let teacher = {};
+        
+        timetable.teachers.forEach(teach => {
+            if(teach.id == id) {
+                teacher = teach;
+                return;
+            }
+        });
+    
+        return teacher;
+    }
+
+    countLessons(id, type, teachers) {
+        let counter = 0;
+
+        timetable.events.forEach(event => {
+            if(event.subject_id == id && event.type == type) {
+                counter++;
+            }
+        });
+
+        return counter;
     }
 }

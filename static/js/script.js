@@ -31,10 +31,10 @@ async function main() {
     }
 
     select.onSelected(onSelectedCallback);
-
     storage.onTimetablesSaved((timetables) => {
         select.set(timetables);
     });
+    
     new Popup();
 }
 
