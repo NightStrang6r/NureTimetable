@@ -22,13 +22,13 @@ export default class ListController {
             selected.push({
                 type: type,
                 id: listItem.dataset.id,
-                value: listItem.innerHTML
+                name: listItem.innerHTML
             });
         } else {
             listItem.classList.remove('list-item-selected');
             
             selected.forEach((item, index) => {
-                if(item.id == listItem.dataset.id && item.value == listItem.innerHTML) {
+                if(item.id == listItem.dataset.id && item.name == listItem.innerHTML) {
                     selected.splice(index, 1);
                 }
             });

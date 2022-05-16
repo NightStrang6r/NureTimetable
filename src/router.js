@@ -20,9 +20,6 @@ class Router {
     }
 
     onIndex(req, res) {
-        //let index = fs.readFileSync(`${Router.path}/index.html`).toString();
-        //index = index.replace('loader-1.gif', `loader-${Math.floor(Math.random() * (6 - 1 + 1)) + 1}.gif`);
-        //res.send(index);
         res.sendFile(`${Router.path}/index.html`);
     }
 
@@ -31,16 +28,46 @@ class Router {
     }
 
     async getTimetable(req, res) {
-        const groupId = Number(req.query.groupId);
+        const id = Number(req.query.id);
 
-        if(isNaN(groupId) || req.query.groupId.length < 7) {
+        if(isNaN(id) || !req.query.type) {
             res.status(400).send('Invalid request!');
             return;
         }
 
-        const data = await Router.API.getTimetable(groupId);
+        let typeId;
+        switch (req.query.type) {
+            case 'groups':
+                typeId = 1;
+                break;
+            case 'teachers':
+                typeId = 2;
+                break;
+            case 'audiences':
+                typeId = 3;
+                break;
+            default:
+                typeId = 1;
+                break;
+        }
+
+        const data = await Router.API.getTimetable(id, typeId);
+
         res.setHeader('content-type', 'application/json');
-        res.send(data);
+        let error = false;
+        if(data.length < 5000) {
+            try {
+                JSON.parse(data.toString());
+            } catch(err) {
+                error = "Invalid timetable";
+            }
+        }
+
+        if(error) {
+            res.send(`{"error": "${error}"}`);
+        } else {
+            res.send(data);
+        }
     }
 
     async getGroups(req, res) {

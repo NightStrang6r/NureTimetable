@@ -9,39 +9,75 @@ export default class Storage {
         this.groups = null;
     }
 
+    // Возвращает все расписания из кэша
     getTimetables() {
         if(!localStorage.timetables) return [];
         
         return JSON.parse(localStorage.timetables);
     }
 
+    // Сохраняет все расписания в кэш
     saveTimetables(timetables) {
         localStorage.timetables = JSON.stringify(timetables);
         onTimetablesSaved(timetables);
     }
 
+    // Колбэк функция, вызывается при сохранении расписания
     onTimetablesSaved(callback) {
         onTimetablesSaved = callback;
     }
 
-    async getTimetable(groupId) {
-        /*let timetables = JSON.parse(localStorage.timetables);
-        timetables.forEach(timetable => {
-            if(timetable.type == "groups" && timetable.id == groupId) {
-                this.timetable = JSON.parse(timetable);
-                return this.timetable;
+    // Сохраняет id выбранного расписания
+    saveSelected(id) {
+        localStorage.selected = id;
+    }
+
+    // Возвращает id выбранного расписания
+    getSelected() {
+        if(localStorage.selected) return Number(localStorage.selected);
+        return null;
+    }
+
+    // Возвращает расписание по id с учётом возможного кэша
+    async getTimetable(id) {
+        // Получаем кэш расписаний из localStorage
+        let timetables = this.getTimetables();
+        let type, name;
+
+        // Если кэш не пуст
+        if(timetables.length > 0) {
+            for(let i = 0; i < timetables.length; i++) {
+                let timetable = timetables[i];
+    
+                // Находим нужное расписание
+                if(timetable.id == id) {
+                    // Если кэша нет, выходим
+                    if(!timetable.data) {
+                        type = timetable.type;
+                        name = timetable.name;
+                        timetables.splice(i, 1);
+                        break;
+                    }
+
+                    this.timetable = JSON.parse(timetable.data);
+                    return this.timetable;
+                }
             }
-        });*/
+        }
 
-        this.timetable = await api.getTimetable(groupId);
+        // Если кэша нет, используем API
+        this.timetable = await api.getTimetable(id, type);
 
-        /*timetables.push({
-            type: "groups",
-            id: groupId, 
+        // Готовим массив для кэша
+        timetables.push({
+            id: id, 
+            type: type,
+            name: name,
             data: JSON.stringify(this.timetable)
-        });*/
+        });
 
-        //localStorage.timetables = JSON.stringify(timetables)
+        // Записываем в кэш
+        localStorage.timetables = JSON.stringify(timetables)
 
         return this.timetable;
     }

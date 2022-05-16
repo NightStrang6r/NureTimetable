@@ -1,8 +1,8 @@
 class URL {
-    getTimetableUrl(groupId) {
+    getTimetableUrl(id, typeId) {
         return 'https://cist.nure.ua/ias/app/tt/P_API_EVEN_JSON'
-            + '?type_id=1'
-            + `&timetable_id=${groupId}`
+            + `?type_id=${typeId}`
+            + `&timetable_id=${id}`
             + '&idClient=KNURESked';
     }
 

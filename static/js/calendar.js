@@ -68,6 +68,7 @@ export default class Calendar {
 
         let type = parser.getTypeById(event.type);
         let subject = parser.getSubjectById(event.subject_id);
+        let auditory = event.auditory;
         let color;
     
         switch (type.short_name) {
@@ -88,7 +89,7 @@ export default class Calendar {
         }
     
         calendar.addEvent({
-            title: `${subject.brief} ${type.short_name} 103i`,
+            title: `${subject.brief} ${type.short_name} ${auditory}`,
             start: event.start_time * 1000,
             end: event.end_time * 1000,
             description: type.short_name,

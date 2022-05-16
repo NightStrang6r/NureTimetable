@@ -1,6 +1,6 @@
 export default class API {
-    async getTimetable(groupId) {
-        const url = `/get?groupId=${groupId}`;
+    async getTimetable(id, type) {
+        const url = `/get?id=${id}&type=${type}`;
         const options = {
             method: 'GET'
         };

@@ -15,9 +15,19 @@ export default class Select {
         this.clearOptions();
 
         timetables.forEach(timetable => {
-            let option = createOption(timetable.value, timetable.id, timetable.type);
+            let option = createOption(timetable.name, timetable.id, timetable.type);
             select.append(option);
         });
+    }
+
+    setSelected(id) {
+        let options = select.options;
+        for(let i = 0; i < options.length; i++) {
+            let option = options[i];
+            if(option.dataset.id == id) {
+                option.selected = true;
+            }
+        }
     }
 
     clearOptions() {

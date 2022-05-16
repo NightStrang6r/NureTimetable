@@ -20,12 +20,14 @@ async function main() {
     select = new Select('.timetable-select');
 
     let timetables = storage.getTimetables();
+    let lastTimetableId = storage.getSelected();
     select.set(timetables);
-    let lastTimetable = select.getFirstOption();
 
-    if(lastTimetable) {
-        console.log(lastTimetable);
-        onSelectedCallback(lastTimetable);
+    if(lastTimetableId) {
+        select.setSelected(lastTimetableId);
+        onSelectedCallback(lastTimetableId);
+    } else {
+        preloader.stop();
     }
 
     select.onSelected(onSelectedCallback);
@@ -37,20 +39,36 @@ async function main() {
 }
 
 async function onSelectedCallback(timetable) {
+    let id;
+
     calendar.destroy();
     preloader.start();
-    if(!timetable.id) {
+
+    if((typeof timetable) == 'number') {
+        id = timetable;
+    } else {
+        id = timetable.id;
+    }
+
+    if(!id) {
         calendar.removeEvents();
         calendar.render();
         preloader.stop();
         return;
     }
-        
-    console.log(timetable);
-    timetable = await storage.getTimetable(timetable.id);
-    calendar.setTimetable(timetable);
+
+    storage.saveSelected(id);
     calendar.removeEvents();
-    calendar.loadEvents(timetable.events);
+    timetable = await storage.getTimetable(id);
+    
+    if(timetable.error) {
+        preloader.stop();
+        alert(`Расписание устарело либо более недоступно.`);
+    } else {
+        calendar.setTimetable(timetable);
+        calendar.loadEvents(timetable.events);
+    }
+
     calendar.render();
     preloader.stop();
 }

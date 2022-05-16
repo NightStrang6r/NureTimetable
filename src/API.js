@@ -7,8 +7,8 @@ class API {
         API.URL = new URL();
     }
     
-    async getTimetable(groupId) {
-        const url = API.URL.getTimetableUrl(groupId);
+    async getTimetable(id, typeId) {
+        const url = API.URL.getTimetableUrl(id, typeId);
         const response = await fetch(url);
         const data = this.decode(response);
         return data;
