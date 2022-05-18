@@ -21,6 +21,7 @@ async function main() {
 
     let timetables = storage.getTimetables();
     let lastTimetableId = storage.getSelected();
+    storage.setReloadButton('.reload-trigger');
     select.set(timetables);
 
     if(lastTimetableId) {

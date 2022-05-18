@@ -2,11 +2,19 @@ import API from './API.js';
 let api = new API();
 
 let onTimetablesSaved = null;
+let getSelected = null;
+let getTimetable = null;
+let getTimetables = null;
 
 export default class Storage {
     constructor() {
         this.timetable = null;
         this.groups = null;
+        this.reloadButton = null;
+
+        getSelected = this.getSelected;
+        getTimetable = this.getTimetable;
+        getTimetables = this.getTimetables;
     }
 
     // Возвращает все расписания из кэша
@@ -38,8 +46,18 @@ export default class Storage {
         return null;
     }
 
+    setReloadButton(selector) {
+        this.reloadButton = document.querySelector(selector);
+        this.reloadButton.addEventListener('click', this.reloadSelected);
+    }
+
+    reloadSelected() {
+        let id = getSelected();
+        console.log(id);
+    }
+
     // Возвращает расписание по id с учётом возможного кэша
-    async getTimetable(id) {
+    async getTimetable(id, reload = false) {
         // Получаем кэш расписаний из localStorage
         let timetables = this.getTimetables();
         let type, name;
@@ -56,6 +74,9 @@ export default class Storage {
                         type = timetable.type;
                         name = timetable.name;
                         timetables.splice(i, 1);
+                        break;
+                    } else if(reload) {
+                        delete timetable.data;
                         break;
                     }
 
