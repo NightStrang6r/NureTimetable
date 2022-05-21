@@ -40,11 +40,7 @@ export default class Select {
 
         let option = target.options[target.selectedIndex];
         if(option.dataset.id) {
-            onSelected({
-                name: option.innerHTML,
-                id: option.dataset.id,
-                type: option.dataset.type
-            });
+            onSelected(option.dataset.id);
             return;
         }
     }

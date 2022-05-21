@@ -48,10 +48,10 @@
                 <div class="menu-right-item reload-trigger">
                     <img class="menu-right-item-img" src="assets/refresh.png" />
                 </div>
-                <div class="menu-right-item">
+                <div class="menu-right-item cd-popup-filter-trigger">
                     <img class="menu-right-item-img" src="assets/filter.png" />
                 </div>
-                <div class="menu-right-item cd-popup-trigger">
+                <div class="menu-right-item cd-popup-add-trigger">
                     <img class="menu-right-item-img" src="assets/plus.png" />
                 </div>
             </div>
@@ -87,8 +87,8 @@
         </div>
         <!-- /Calendar -->
 
-        <!-- Popup -->
-        <div class="cd-popup d-none" role="alert">
+        <!-- Popup-Add -->
+        <div class="cd-popup cd-popup-add d-none" role="alert">
             <div class="cd-popup-container">
                 <p>Добавление расписания</p>
                 <ul class="tab-header unselectable">
@@ -113,6 +113,15 @@
                 <a class="cd-popup-close img-replace"></a>
             </div>
         </div>
-        <!-- /Popup -->
+        <!-- /Popup-Add -->
+
+        <!-- Popup-Filter -->
+        <div class="cd-popup cd-popup-filter d-none" role="alert">
+            <div class="cd-popup-container">
+                <p>Фильтр</p>
+                <a class="cd-popup-close img-replace"></a>
+            </div>
+        </div>
+        <!-- /Popup-Filter -->
     </body>
 </html>

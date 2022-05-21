@@ -25,6 +25,10 @@ html, body {
     padding-right: 1em;
 }
 
+.fc-daygrid-event-harness, .fc-timegrid-event-harness {
+    cursor: pointer;
+}
+
 header {
     font-family: 'Roboto', serif;
     width: 100%;

@@ -70,24 +70,7 @@ export default class Calendar {
         let type = parser.getTypeById(event.type);
         let subject = parser.getSubjectById(event.subject_id);
         let auditory = event.auditory;
-        let color;
-    
-        switch (type.short_name) {
-            case 'Лб':
-                color = '#b300a7';
-                break;
-            case 'Пз':
-                color = '#009e18';
-                break;
-            case 'Лк':
-                color = '#bf9300';
-                break;
-            case 'Конс':
-                color = '#00b9bf';
-            default: 
-                color = '#b50000';
-                break;
-        }
+        let color = parser.getColorByType(type.short_name);
     
         calendar.addEvent({
             title: `${subject.brief} ${type.short_name} ${auditory}`,
@@ -99,7 +82,9 @@ export default class Calendar {
                 type: type,
                 auditory: auditory,
                 teachers: event.teachers,
-                groups: event.groups
+                groups: event.groups,
+                start: event.start_time,
+                end: event.end_time
             }
         });
     }
@@ -119,6 +104,7 @@ export default class Calendar {
         let start = info.event.start.toLocaleString('ru-RU', { hour: 'numeric', minute: 'numeric' });
         let end = info.event.end.toLocaleString('ru-RU', { hour: 'numeric', minute: 'numeric' });
         let lessonsCount = parser.countLessons(properties.subject.id, properties.type.id, properties.teachers);
+        let currentLesson = parser.countCurrentLesson(properties.subject.id, properties.type.id, properties.start, properties.end);
 
         properties.teachers.forEach(id => {
             teachers += `${parser.getTeacherById(id).full_name} `;
@@ -128,6 +114,6 @@ export default class Calendar {
             groups += `${parser.getGroupById(id).name} `;
         });
 
-        alert(`${title}\n\nТип: ${type} (?/${lessonsCount})\nАудитория: ${auditory}\nПреподаватели: ${teachers}\nГруппы: ${groups}\nДень: ${day}\nВремя: ${start} - ${end}`);
+        alert(`${title}\n\nТип: ${type} (${currentLesson}/${lessonsCount})\nАудитория: ${auditory}\nПреподаватели: ${teachers}\nГруппы: ${groups}\nДень: ${day}\nВремя: ${start} - ${end}`);
     }
 } 

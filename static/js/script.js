@@ -2,6 +2,7 @@ import Preloader from './preloader.js';
 import Calendar from './calendar.js';
 import Storage from './storage.js';
 import Select from './select.js';
+import PopupAdd from './popupAdd.js';
 import Popup from './popup.js';
 
 let calendar, preloader, storage, select;
@@ -32,24 +33,17 @@ async function main() {
     }
 
     select.onSelected(onSelectedCallback);
-    storage.onTimetablesSaved((timetables) => {
-        select.set(timetables);
-    });
+    storage.onTimetablesSaved(onSavedCallback);
     
-    new Popup();
+    new Popup('.cd-popup-filter', '.cd-popup-filter-trigger');
+    new PopupAdd('.cd-popup-add', '.cd-popup-add-trigger');
 }
 
-async function onSelectedCallback(timetable) {
-    let id;
+async function onSelectedCallback(id) {
+    let timetable;
 
     calendar.destroy();
     preloader.start();
-
-    if((typeof timetable) == 'number') {
-        id = timetable;
-    } else {
-        id = timetable.id;
-    }
 
     if(!id) {
         calendar.removeEvents();
@@ -72,4 +66,8 @@ async function onSelectedCallback(timetable) {
 
     calendar.render();
     preloader.stop();
+}
+
+function onSavedCallback(timetables) {
+    select.set(timetables);
 }

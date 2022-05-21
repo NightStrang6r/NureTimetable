@@ -57,14 +57,54 @@ export default class Parser {
         return teacher;
     }
 
-    countLessons(id, type, teachers) {
+    getColorByType(type) {
+        let color = '#b50000';
+
+        switch (type) {
+            case 'Лб':
+                color = '#b300a7';
+                break;
+            case 'Пз':
+                color = '#009e18';
+                break;
+            case 'Лк':
+                color = '#bf9300';
+                break;
+            case 'Конс':
+                color = '#00b9bf';
+            default: 
+                color = '#b50000';
+                break;
+        }
+
+        return color;
+    }
+
+    countLessons(id, typeId, teachers) {
         let counter = 0;
 
         timetable.events.forEach(event => {
-            if(event.subject_id == id && event.type == type) {
+            if(event.subject_id == id && event.type == typeId) {
                 counter++;
             }
         });
+
+        return counter;
+    }
+
+    countCurrentLesson(id, typeId, startTime, endTime) {
+        let counter = 0;
+
+        for(let i = 0; i < timetable.events.length; i++) {
+            let event = timetable.events[i];
+
+            if(event.subject_id == id && event.type == typeId) {
+                counter++;
+
+                if(event.start_time == startTime && event.end_time == endTime)
+                    break;
+            }
+        }
 
         return counter;
     }
