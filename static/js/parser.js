@@ -1,14 +1,12 @@
-let timetable = null;
-
 export default class Parser {
     constructor(timetab) {
-        timetable = timetab;
+        this.timetable = timetab;
     }
 
     getSubjectById(id) {
         let subject = {};
         
-        timetable.subjects.forEach(subj => {
+        this.timetable.subjects.forEach(subj => {
             if(subj.id == id) {
                 subject = subj;
                 return;
@@ -21,7 +19,7 @@ export default class Parser {
     getTypeById(id) {
         let type = {};
         
-        timetable.types.forEach(tp => {
+        this.timetable.types.forEach(tp => {
             if(tp.id == id) {
                 type = tp;
                 return;
@@ -34,7 +32,7 @@ export default class Parser {
     getGroupById(id) {
         let group = {};
         
-        timetable.groups.forEach(gr => {
+        this.timetable.groups.forEach(gr => {
             if(gr.id == id) {
                 group = gr;
                 return;
@@ -47,7 +45,7 @@ export default class Parser {
     getTeacherById(id) {
         let teacher = {};
         
-        timetable.teachers.forEach(teach => {
+        this.timetable.teachers.forEach(teach => {
             if(teach.id == id) {
                 teacher = teach;
                 return;
@@ -83,7 +81,7 @@ export default class Parser {
     countLessons(id, typeId, teachers) {
         let counter = 0;
 
-        timetable.events.forEach(event => {
+        this.timetable.events.forEach(event => {
             if(event.subject_id == id && event.type == typeId) {
                 counter++;
             }
@@ -95,8 +93,8 @@ export default class Parser {
     countCurrentLesson(id, typeId, startTime, endTime) {
         let counter = 0;
 
-        for(let i = 0; i < timetable.events.length; i++) {
-            let event = timetable.events[i];
+        for(let i = 0; i < this.timetable.events.length; i++) {
+            let event = this.timetable.events[i];
 
             if(event.subject_id == id && event.type == typeId) {
                 counter++;

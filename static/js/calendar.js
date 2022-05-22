@@ -31,7 +31,7 @@ export default class Calendar {
                 omitZeroMinute: false,
                 meridiem: 'short'
             },
-            eventClick: this.onEventClick
+            eventClick: (event) => this.onEventClick(event)
         }
     
         this.calendar = new FullCalendar.Calendar(calendarEl, options);
