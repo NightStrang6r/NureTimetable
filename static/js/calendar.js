@@ -1,7 +1,5 @@
-import Parser from './Parser.js';
-
-let calendar = null, 
-    timetable = null;
+import Parser from './parser.js';
+import Storage from './storage.js';
 
 export default class Calendar {
     constructor(selector) {
@@ -36,19 +34,20 @@ export default class Calendar {
             eventClick: this.onEventClick
         }
     
-        calendar = new FullCalendar.Calendar(calendarEl, options);
+        this.calendar = new FullCalendar.Calendar(calendarEl, options);
+        this.storage = new Storage();
     }
 
     render() {
-        calendar.render();
+        this.calendar.render();
     }
 
     destroy() {
-        calendar.destroy();
+        this.calendar.destroy();
     }
 
     setTimetable(timetab) {
-        timetable = timetab;
+        this.timetable = timetab;
     }
 
     loadEvents(events) {
@@ -58,21 +57,25 @@ export default class Calendar {
     }
 
     removeEvents() {
-        let events = calendar.getEvents();
+        let events = this.calendar.getEvents();
         events.forEach((event) => {
             event.remove();
         });
     }
 
     async addEvent(event) {
-        let parser = new Parser(timetable);
+        let parser = new Parser(this.timetable);
 
         let type = parser.getTypeById(event.type);
+
+        let filters = this.storage.getFilters();
+        if(filters.includes(type.type)) return;
+
         let subject = parser.getSubjectById(event.subject_id);
         let auditory = event.auditory;
         let color = parser.getColorByType(type.short_name);
     
-        calendar.addEvent({
+        this.calendar.addEvent({
             title: `${subject.brief} ${type.short_name} ${auditory}`,
             start: event.start_time * 1000,
             end: event.end_time * 1000,
@@ -90,7 +93,7 @@ export default class Calendar {
     }
 
     onEventClick(info) {
-        let parser = new Parser(timetable);
+        let parser = new Parser(this.timetable);
 
         console.log(info.event);
         let properties = info.event.extendedProps;

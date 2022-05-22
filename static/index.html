@@ -12,7 +12,7 @@
         <meta name="og:url" content="https://nure.date" />
         <meta name="og:image" content="https://nure.date/assets/logo.png" />
         
-        <link rel="shortcut icon" href="data:image/svg+xml,<svg xmlns=%22http://www.w3.org/2000/svg%22 viewBox=%220 0 100 100%22><text y=%22.9em%22 font-size=%2290%22>📅</text></svg>" />
+        <link rel='shortcut icon' href="data:image/svg+xml,<svg xmlns=%22http://www.w3.org/2000/svg%22 viewBox=%220 0 100 100%22><text y=%22.9em%22 font-size=%2290%22>📅</text></svg>" />
         <link href='lib/main.css' rel='stylesheet' />
         <link href='css/material.css' rel='stylesheet' />
         <link href='css/style.css' rel='stylesheet' />
@@ -82,8 +82,8 @@
         <!-- /Preloader -->
 
         <!-- Calendar -->
-        <div id='calendar-container'>
-            <div id='calendar'></div>
+        <div id="calendar-container">
+            <div id="calendar"></div>
         </div>
         <!-- /Calendar -->
 
@@ -108,7 +108,7 @@
                 <div class="popup-list unselectable">
                 </div>
                 <div class="popup-down">
-                    <button class="button save-button">Сохранить</button>
+                    <button class="button save-button popup-add-save">Сохранить</button>
                 </div>
                 <a class="cd-popup-close img-replace"></a>
             </div>
@@ -119,6 +119,26 @@
         <div class="cd-popup cd-popup-filter d-none" role="alert">
             <div class="cd-popup-container">
                 <p>Фильтр</p>
+                <div class="checkbox d-none">
+                    <label class="custom-checkbox">
+                        <input type="checkbox">
+                        <span></span>
+                    </label>
+                </div>
+                <div class="checkboxes">   
+                </div>
+                <div class="names d-none">
+                    <div id="lecture">Лекции</div>
+                    <div id="practice">Практические занятия</div>
+                    <div id="laboratory">Лабораторные занятия</div>
+                    <div id="consultation">Консультации</div>
+                    <div id="test">Зачёты</div>
+                    <div id="exam">Экзамены</div>
+                    <div id="course_work">Курсовые работы</div>
+                </div>
+                <div class="popup-down">
+                    <button class="button save-button popup-filter-save">Сохранить</button>
+                </div>
                 <a class="cd-popup-close img-replace"></a>
             </div>
         </div>

@@ -69,7 +69,6 @@ export default class API {
         const json = await res.json();
     
         let audiences = [];
-        console.log(json);
         json.university.buildings.forEach(building => {
             audiences = audiences.concat(building.auditories);
         });

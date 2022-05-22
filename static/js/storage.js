@@ -2,7 +2,7 @@ import API from './API.js';
 let api = new API();
 
 let onTimetablesSaved = null;
-let getSelected = null;
+let onFiltersSaved = null;
 let getTimetable = null;
 let getTimetables = null;
 
@@ -12,7 +12,6 @@ export default class Storage {
         this.groups = null;
         this.reloadButton = null;
 
-        getSelected = this.getSelected;
         getTimetable = this.getTimetable;
         getTimetables = this.getTimetables;
     }
@@ -46,14 +45,40 @@ export default class Storage {
         return null;
     }
 
-    setReloadButton(selector) {
-        this.reloadButton = document.querySelector(selector);
-        this.reloadButton.addEventListener('click', this.reloadSelected);
+    saveFilters(filter) {
+        localStorage.filter = JSON.stringify(filter);
+        onFiltersSaved(filter);
     }
 
-    reloadSelected() {
-        let id = getSelected();
-        console.log(id);
+    getFilters() {
+        if(localStorage.filter) return JSON.parse(localStorage.filter);
+        return null;
+    }
+
+    onFiltersSaved(callback) {
+        onFiltersSaved = callback;
+    }
+
+    deleteCacheById(id) {
+        let timetables = this.getTimetables();
+
+        if(timetables.length > 0) {
+            for(let i = 0; i < timetables.length; i++) {
+                let timetable = timetables[i];
+    
+                // Находим нужное расписание
+                if(timetable.id == id) {
+                    // Если кэша нет, выходим
+                    if(!timetable.data)
+                        break;
+                
+                    delete timetable.data;
+                    break;
+                }
+            }
+        }
+
+        localStorage.timetables = JSON.stringify(timetables);
     }
 
     // Возвращает расписание по id с учётом возможного кэша
@@ -98,7 +123,7 @@ export default class Storage {
         });
 
         // Записываем в кэш
-        localStorage.timetables = JSON.stringify(timetables)
+        localStorage.timetables = JSON.stringify(timetables);
 
         return this.timetable;
     }

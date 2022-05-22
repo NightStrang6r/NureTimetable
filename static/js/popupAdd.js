@@ -8,7 +8,7 @@ export default class PopupAdd extends Popup {
 
         this.popupListEl = document.querySelector('.popup-list');
         this.popupTabHeaderEl = document.querySelector('.tab-header');
-        this.popupSaveEl = document.querySelector('.save-button');
+        this.popupSaveEl = document.querySelector('.popup-add-save');
 
         this.popupSaveEl.addEventListener('click', (event) => this.save(event));
         this.popupTabHeaderEl.addEventListener('click', (event) => this.onTabClick(event));

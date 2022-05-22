@@ -3,9 +3,9 @@ import Calendar from './calendar.js';
 import Storage from './storage.js';
 import Select from './select.js';
 import PopupAdd from './popupAdd.js';
-import Popup from './popup.js';
+import PopupFilter from './popupFilter.js';
 
-let calendar, preloader, storage, select;
+let calendar, preloader, storage, select, reloadButton;
 
 document.addEventListener('DOMContentLoaded', main);
 init();
@@ -19,10 +19,10 @@ async function main() {
     calendar = new Calendar('#calendar');
     storage = new Storage();
     select = new Select('.timetable-select');
+    reloadButton = document.querySelector('.reload-trigger');
 
     let timetables = storage.getTimetables();
     let lastTimetableId = storage.getSelected();
-    storage.setReloadButton('.reload-trigger');
     select.set(timetables);
 
     if(lastTimetableId) {
@@ -33,13 +33,15 @@ async function main() {
     }
 
     select.onSelected(onSelectedCallback);
-    storage.onTimetablesSaved(onSavedCallback);
+    storage.onTimetablesSaved(onTimetablesSavedCallback);
+    storage.onFiltersSaved(onFiltersSavedCallback);
+    reloadButton.addEventListener('click', onReloadButton);
     
-    new Popup('.cd-popup-filter', '.cd-popup-filter-trigger');
+    new PopupFilter('.cd-popup-filter', '.cd-popup-filter-trigger');
     new PopupAdd('.cd-popup-add', '.cd-popup-add-trigger');
 }
 
-async function onSelectedCallback(id) {
+async function loadTimetable(id) {
     let timetable;
 
     calendar.destroy();
@@ -68,6 +70,23 @@ async function onSelectedCallback(id) {
     preloader.stop();
 }
 
-function onSavedCallback(timetables) {
+function onSelectedCallback(id) {
+    loadTimetable(id);
+}
+
+function onTimetablesSavedCallback(timetables) {
     select.set(timetables);
+}
+
+function onFiltersSavedCallback(filters) {
+    let selected = storage.getSelected();
+    if(!selected) return;
+    loadTimetable(selected);
+}
+
+function onReloadButton() {
+    let selected = storage.getSelected();
+    if(!selected) return;
+    storage.deleteCacheById(selected);
+    loadTimetable(selected);
 }

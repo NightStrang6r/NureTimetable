@@ -3,7 +3,6 @@ let preloaderImg = null;
 export default class Preloader {
     constructor(selector) {
         preloaderImg = document.querySelector(selector);
-        console.log(preloaderImg);
     }
 
     async start() {
