@@ -69,7 +69,7 @@ export default class Calendar {
         let type = parser.getTypeById(event.type);
 
         let filters = this.storage.getFilters();
-        if(filters.includes(type.type)) return;
+        if(filters && filters.includes(type.type)) return;
 
         let subject = parser.getSubjectById(event.subject_id);
         let auditory = event.auditory;

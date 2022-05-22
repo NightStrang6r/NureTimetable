@@ -53,7 +53,7 @@ export default class PopupAdd extends Popup {
             span.innerHTML = typeName;
             input.value = type;
 
-            if(filters.includes(type)) {
+            if(filters && filters.includes(type)) {
                 input.checked = false;
             } else {
                 input.checked = true;

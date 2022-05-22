@@ -90,6 +90,17 @@ class Router {
         res.send(data);
     }
 
+    async getDarkTheme(req, res) {
+        res.setHeader('cache-control', 'cache-control: private, max-age=0, no-cache');
+        res.status(200);
+
+        if(req.cookies && req.cookies.dark == 'true') {
+            res.sendFile(`${Router.path}/css/dark.css`);
+        } else {
+            res.send('');
+        }
+    }
+
     badRequest(res) {
         res.status(400).send('Invalid request!');
     }

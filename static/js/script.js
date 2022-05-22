@@ -4,13 +4,15 @@ import Storage from './storage.js';
 import Select from './select.js';
 import PopupAdd from './popupAdd.js';
 import PopupFilter from './popupFilter.js';
+import DarkTheme from './darkTheme.js';
 
-let calendar, preloader, storage, select, reloadButton;
+let calendar, preloader, darkTheme, storage, select, reloadButton;
 
 document.addEventListener('DOMContentLoaded', main);
 init();
 
 async function init() {
+    darkTheme = new DarkTheme('.dark-trigger');
     preloader = new Preloader('#preloader-img');
     preloader.start();
 }

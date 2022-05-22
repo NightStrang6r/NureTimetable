@@ -1,5 +1,6 @@
 {
   "dependencies": {
+    "cookie-parser": "^1.4.6",
     "express": "^4.18.1",
     "iconv-lite": "^0.6.3",
     "node-fetch": "^2.6.7"
@@ -8,7 +9,6 @@
   "description": "",
   "version": "1.0.0",
   "main": "src/index.js",
-  "devDependencies": {},
   "scripts": {
     "start": "node src/index.js"
   },
