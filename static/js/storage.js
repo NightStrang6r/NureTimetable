@@ -173,6 +173,16 @@ export default class Storage {
         return this.audiences;
     }
 
+    saveLanguage(language) {
+        this.setCookie('lang', language);
+    }
+
+    getLanguage() {
+        let lang = this.getCookie('lang');
+        if(!lang) return null;
+        return lang;
+    }
+
     getCookie(name) {
         let matches = document.cookie.match(new RegExp(
           "(?:^|; )" + name.replace(/([\.$?*|{}\(\)\[\]\\\/\+^])/g, '\\$1') + "=([^;]*)"
@@ -207,5 +217,27 @@ export default class Storage {
         this.setCookie(name, "", {
           'max-age': -1
         });
+    }
+
+    deleteAllCookies() {
+        let cookies = document.cookie.split(";");
+        for (var i = 0; i < cookies.length; i++) {
+            let cookie = cookies[i];
+            let eqPos = cookie.indexOf("=");
+            let name = eqPos > -1 ? cookie.substr(0, eqPos) : cookie;
+            document.cookie = name + "=;expires=Thu, 01 Jan 1970 00:00:00 GMT;";
+            document.cookie = name + '=; path=/; expires=Thu, 01 Jan 1970 00:00:01 GMT;';
+        }
+    }
+
+    setClearTrigger(selector) {
+        let trigger = document.querySelector(selector);
+        trigger.addEventListener('click', (event) => this.clear(event));
+    }
+
+    clear() {
+        localStorage.clear();
+        this.deleteAllCookies();
+        window.location.reload();
     }
 };

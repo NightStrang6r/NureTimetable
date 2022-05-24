@@ -4,6 +4,13 @@ import Storage from './storage.js';
 export default class Calendar {
     constructor(selector) {
         const calendarEl = document.querySelector(selector);
+
+        this.lang = document.querySelector('#lang').innerHTML;
+        const today = document.querySelector('#today').innerHTML;
+        const month = document.querySelector('#month').innerHTML;
+        const week = document.querySelector('#week').innerHTML;
+        const day = document.querySelector('#day').innerHTML;
+
         const options = {
             headerToolbar: {
                 left: 'prev,next today',
@@ -11,14 +18,13 @@ export default class Calendar {
                 right: 'dayGridMonth,timeGridWeek,timeGridDay'
             },
             buttonText: {
-                today:    'сегодня',
-                month:    'месяц',
-                week:     'неделя',
-                day:      'день',
-                list:     'список'
+                today:    today,
+                month:    month,
+                week:     week,
+                day:      day
             },
             initialView: 'timeGridWeek',
-            locale: "ru",
+            locale: this.lang,
             firstDay: 1,
             height: '100%',
             nowIndicator: true,
@@ -103,9 +109,9 @@ export default class Calendar {
         let auditory = properties.auditory;
         let groups = '';
         let teachers = '';
-        let day = info.event.start.toLocaleString('ru-RU', { weekday: 'long', year: 'numeric', month: 'numeric', day: 'numeric' });
-        let start = info.event.start.toLocaleString('ru-RU', { hour: 'numeric', minute: 'numeric' });
-        let end = info.event.end.toLocaleString('ru-RU', { hour: 'numeric', minute: 'numeric' });
+        let day = info.event.start.toLocaleString(this.lang, { weekday: 'long', year: 'numeric', month: 'numeric', day: 'numeric' });
+        let start = info.event.start.toLocaleString(this.lang, { hour: 'numeric', minute: 'numeric' });
+        let end = info.event.end.toLocaleString(this.lang, { hour: 'numeric', minute: 'numeric' });
         let lessonsCount = parser.countLessons(properties.subject.id, properties.type.id, properties.teachers);
         let currentLesson = parser.countCurrentLesson(properties.subject.id, properties.type.id, properties.start, properties.end);
 

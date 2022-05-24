@@ -227,7 +227,7 @@ input[type=checkbox] {
     box-sizing: border-box;
     cursor: pointer;
     position: absolute;
-    z-index: 99;
+    z-index: 1;
     height: 100%;
     width: 100%;
     top: 21px;
@@ -300,6 +300,7 @@ input[type=checkbox]:checked ~ .sidebarIconToggle > .diagonal.part-2 {
     transition: opacity 0.3s 0s, visibility 0s 0.3s;
 }
 .cd-popup.is-visible {
+    z-index: 2;
     opacity: 1;
     visibility: visible;
     -webkit-transition: opacity 0.3s 0s, visibility 0s 0s;
@@ -555,6 +556,16 @@ input[type=checkbox]:checked ~ .sidebarIconToggle > .diagonal.part-2 {
 /* POPUP-FILTER */
 .cd-popup-filter .cd-popup-container {
     width: 40%;
+}
+
+/* POPUP-LANGUAGE */
+.cd-popup-language .cd-popup-container {
+    width: 30%;
+}
+
+.select-language .select {
+    margin-left: auto;
+    margin-right: auto;
 }
 
 /* CHECKBOXES */

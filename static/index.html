@@ -1,13 +1,13 @@
 <!DOCTYPE html>
-<html lang='ru'>
+<html lang='${lang}'>
     <head>
         <meta charset='utf-8' />
-        <title>NureTimetable - Расписание ХНУРЭ</title>
-        <meta name='description' content='Актуальное расписание ХНУРЭ для студентов и преподавателей на день, неделю или месяц' />
+        <title>${title}</title>
+        <meta name='description' content='${description}' />
         <meta name='keywords' content='nure,ХНУРЕ,ХНУРЭ,расписание,timetable,schedule' />
         <meta name="viewport" content="width=device-width, initial-scale=1" />
-        <meta name="og:title" content="NureTimetable - Расписание ХНУРЭ" />
-        <meta name="og:description" content="Актуальное расписание ХНУРЭ для студентов и преподавателей на день, неделю или месяц" />
+        <meta name="og:title" content="${title}" />
+        <meta name="og:description" content="${description}" />
         <meta name="og:type" content="website" />
         <meta name="og:url" content="https://nure.date" />
         <meta name="og:image" content="https://nure.date/assets/logo.png" />
@@ -33,12 +33,12 @@
             
             <div class="logo" onclick="window.location.reload()">
                 <img class="logo-img" src="assets/logo.png" />
-                <div class="logo-text">NureTimetable</div>
+                <div class="logo-text">${logoText}</div>
             </div>
             <div class="select-group">
                 <div class="select">
                     <select class="timetable-select">
-                        <option>Выбор расписания</option>
+                        <option>${timetableSelect}</option>
                     </select>
                 </div>
             </div>
@@ -69,8 +69,9 @@
             </label>
             <div id="sidebarMenu">
                 <ul class="sidebarMenuInner">
-                    <li><a href="#">Добавить событие</a></li>
-                    <li onclick="localStorage.clear(); window.location.reload();"><a href="#">Сбросить кэш</a></li>
+                    <li><a href="#">${addEvent}</a></li>
+                    <li class="clear-button"><a href="#">${clearCache}</a></li>
+                    <li class="cd-popup-language-trigger"><a href="#">${language}</a></li>
                 </ul>
             </div>
         </div>
@@ -85,22 +86,30 @@
         <!-- Calendar -->
         <div id="calendar-container">
             <div id="calendar"></div>
+            <div class="d-none">
+                <div id="timetable-unavailable">${timetableUnavailable}</div>
+                <div id="lang">${lang}</div>
+                <div id="today">${today}</div>
+                <div id="month">${month}</div>
+                <div id="week">${week}</div>
+                <div id="day">${day}</div>
+            </div>
         </div>
         <!-- /Calendar -->
 
         <!-- Popup-Add -->
         <div class="cd-popup cd-popup-add d-none" role="alert">
             <div class="cd-popup-container">
-                <p>Добавление расписания</p>
+                <p>${timetableAdd}</p>
                 <ul class="tab-header unselectable">
                     <li class="tab-header-item active" data-tab="groups">
-                        Группы
+                        ${groups}
                     </li>
                     <li class="tab-header-item" data-tab="teachers">
-                        Преподаватели
+                        ${teachers}
                     </li>
                     <li class="tab-header-item" data-tab="audiences">
-                        Аудитории
+                        ${audiences}
                     </li>
                 </ul>
                 <div class="popup-input">
@@ -109,7 +118,7 @@
                 <div class="popup-list unselectable">
                 </div>
                 <div class="popup-down">
-                    <button class="button save-button popup-add-save">Сохранить</button>
+                    <button class="button save-button popup-add-save">${save}</button>
                 </div>
                 <a class="cd-popup-close img-replace"></a>
             </div>
@@ -119,7 +128,7 @@
         <!-- Popup-Filter -->
         <div class="cd-popup cd-popup-filter d-none" role="alert">
             <div class="cd-popup-container">
-                <p>Фильтр</p>
+                <p>${filter}</p>
                 <div class="checkbox d-none">
                     <label class="custom-checkbox">
                         <input type="checkbox">
@@ -129,16 +138,37 @@
                 <div class="checkboxes">   
                 </div>
                 <div class="names d-none">
-                    <div id="lecture">Лекции</div>
-                    <div id="practice">Практические занятия</div>
-                    <div id="laboratory">Лабораторные занятия</div>
-                    <div id="consultation">Консультации</div>
-                    <div id="test">Зачёты</div>
-                    <div id="exam">Экзамены</div>
-                    <div id="course_work">Курсовые работы</div>
+                    <div id="lecture">${lectures}</div>
+                    <div id="practice">${practices}</div>
+                    <div id="laboratory">${labs}</div>
+                    <div id="consultation">${consultations}</div>
+                    <div id="test">${tests}</div>
+                    <div id="exam">${exams}</div>
+                    <div id="course_work">${courseWorks}</div>
                 </div>
                 <div class="popup-down">
-                    <button class="button save-button popup-filter-save">Сохранить</button>
+                    <button class="button save-button popup-filter-save">${save}</button>
+                </div>
+                <a class="cd-popup-close img-replace"></a>
+            </div>
+        </div>
+        <!-- /Popup-Filter -->
+
+        <!-- Popup-Filter -->
+        <div class="cd-popup cd-popup-language d-none" role="alert">
+            <div class="cd-popup-container">
+                <p>${language}</p>
+                <div class="select-language">
+                    <div class="select">
+                        <select class="language-select">
+                            <option value="ru">Язык</option>
+                            <option value="uk">Українська</option>
+                            <option value="en">English</option>
+                        </select>
+                    </div>
+                </div>
+                <div class="popup-down">
+                    <button class="button save-button popup-language-save">${save}</button>
                 </div>
                 <a class="cd-popup-close img-replace"></a>
             </div>

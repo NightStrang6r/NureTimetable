@@ -5,6 +5,7 @@ import Select from './select.js';
 import PopupAdd from './popupAdd.js';
 import DarkTheme from './darkTheme.js';
 import PopupFilter from './popupFilter.js';
+import PopupLanguage from './popupLanguage.js';
 
 export default class App {
     run() {
@@ -23,6 +24,7 @@ export default class App {
         this.storage = new Storage();
         this.select = new Select('.timetable-select');
         this.reloadButton = document.querySelector('.reload-trigger');
+        this.storage.setClearTrigger('.clear-button');
 
         let timetables = this.storage.getTimetables();
         let lastTimetableId = this.storage.getSelected();
@@ -42,6 +44,7 @@ export default class App {
         
         new PopupFilter('.cd-popup-filter', '.cd-popup-filter-trigger');
         new PopupAdd('.cd-popup-add', '.cd-popup-add-trigger');
+        new PopupLanguage('.cd-popup-language', '.cd-popup-language-trigger');
     }
 
     async loadTimetable(id) {
@@ -63,7 +66,8 @@ export default class App {
         
         if(timetable.error) {
             this.preloader.stop();
-            alert(`Расписание устарело либо более недоступно.`);
+            this.ttUnavailable = document.querySelector('#timetable-unavailable');
+            alert(this.ttUnavailable.innerHTML);
         } else {
             this.calendar.setTimetable(timetable);
             this.calendar.loadEvents(timetable.events);

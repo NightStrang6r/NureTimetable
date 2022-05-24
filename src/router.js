@@ -2,25 +2,36 @@ const express = require('express');
 const path = require('path');
 const fs = require('fs');
 const API = require('./API.js');
+const Locale = require('./locale.js');
 
 class Router {
     constructor(staticPath) {
-        Router.path = this.getStaticPath(staticPath);
+        Router.path = this.getPath(staticPath);
         Router.API = new API();
+        Router.locale = new Locale(this.getPath('src/locales.json'), 'uk');
     }
 
-    getStaticPath(staticPath) {
+    getPath(staticPath) {
         if(fs.existsSync(staticPath)) {
             return path.resolve(staticPath);
         } else if(fs.existsSync(`../${staticPath}`)) {
             return path.resolve(`../${staticPath}`);
         } else {
-            throw new Error('No static path found!');
+            throw new Error('No path found!');
         }
     }
 
-    onIndex(req, res) {
-        res.sendFile(`${Router.path}/index.html`);
+    async onIndex(req, res) {
+        let lang = 'uk';
+
+        if(req.cookies && req.cookies.lang) {
+            lang = req.cookies.lang;
+        } else {
+            res.cookie('lang', lang);
+        }
+
+        let index = await Router.locale.translate(`${Router.path}/index.html`, lang);
+        res.send(index);
     }
 
     static() {
