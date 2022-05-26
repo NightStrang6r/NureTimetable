@@ -88,11 +88,17 @@
             <div id="calendar"></div>
             <div class="d-none">
                 <div id="timetable-unavailable">${timetableUnavailable}</div>
-                <div id="lang">${lang}</div>
-                <div id="today">${today}</div>
-                <div id="month">${month}</div>
-                <div id="week">${week}</div>
-                <div id="day">${day}</div>
+                <div id="l-lang">${lang}</div>
+                <div id="l-today">${today}</div>
+                <div id="l-month">${month}</div>
+                <div id="l-week">${week}</div>
+                <div id="l-day">${day}</div>
+                <div id="l-type">${type}</div>
+                <div id="l-audience">${audienceUpper}</div>
+                <div id="l-teachers">${teachers}</div>
+                <div id="l-groups">${groups}</div>
+                <div id="l-dayUpper">${dayUpper}</div>
+                <div id="l-time">${timeUpper}</div>
             </div>
         </div>
         <!-- /Calendar -->
@@ -154,7 +160,7 @@
         </div>
         <!-- /Popup-Filter -->
 
-        <!-- Popup-Filter -->
+        <!-- Popup-Language -->
         <div class="cd-popup cd-popup-language d-none" role="alert">
             <div class="cd-popup-container">
                 <p>${language}</p>
@@ -173,6 +179,30 @@
                 <a class="cd-popup-close img-replace"></a>
             </div>
         </div>
-        <!-- /Popup-Filter -->
+        <!-- /Popup-Language -->
+
+        <!-- Popup-Event -->
+        <div class="cd-popup cd-popup-event d-none" role="alert">
+            <div class="cd-popup-container">
+                <p>Событие</p>
+                <div class="event-form">
+                    <div class="form-group">
+                        <label class="control-label">Краткое описание</label>
+                        <input type="text" class="form-control event-name">
+                        <p class="help-block">Название</p>
+                    </div>
+                    <div class="form-group">
+                        <label class="control-label">Подробное описание</label>
+                        <textarea class="form-control form-textarea event-description" rows="3"></textarea>
+                        <p class="help-block">Можно не заполнять</p>
+                    </div>
+                </div>
+                <div class="popup-down">
+                    <button class="button save-button popup-event-save">${save}</button>
+                </div>
+                <a class="cd-popup-close img-replace"></a>
+            </div>
+        </div>
+        <!-- /Popup-Event -->
     </body>
 </html>

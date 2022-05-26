@@ -1,15 +1,12 @@
 import Parser from './parser.js';
 import Storage from './storage.js';
+import PopupEvent from './popupEvent.js';
 
 export default class Calendar {
     constructor(selector) {
         const calendarEl = document.querySelector(selector);
 
-        this.lang = document.querySelector('#lang').innerHTML;
-        const today = document.querySelector('#today').innerHTML;
-        const month = document.querySelector('#month').innerHTML;
-        const week = document.querySelector('#week').innerHTML;
-        const day = document.querySelector('#day').innerHTML;
+        this.loadLocalization();
 
         const options = {
             headerToolbar: {
@@ -18,13 +15,16 @@ export default class Calendar {
                 right: 'dayGridMonth,timeGridWeek,timeGridDay'
             },
             buttonText: {
-                today:    today,
-                month:    month,
-                week:     week,
-                day:      day
+                today:    this.locale.today,
+                month:    this.locale.month,
+                week:     this.locale.week,
+                day:      this.locale.day
             },
             initialView: 'timeGridWeek',
-            locale: this.lang,
+            locale: this.locale.lang,
+            selectable: true,
+            dayMaxEvents: true,
+            selectMirror: true,
             firstDay: 1,
             height: '100%',
             nowIndicator: true,
@@ -37,11 +37,15 @@ export default class Calendar {
                 omitZeroMinute: false,
                 meridiem: 'short'
             },
-            eventClick: (event) => this.onEventClick(event)
+            unselectCancel: '.event-form',
+            select: (event) => this.onSelect(event),
+            eventClick: (event) => this.onEventClick(event),
+            eventChange: (event) => this.onEventChange(event)
         }
     
         this.calendar = new FullCalendar.Calendar(calendarEl, options);
         this.storage = new Storage();
+        this.popup = new PopupEvent('.cd-popup-event', this.calendar);
     }
 
     render() {
@@ -56,9 +60,34 @@ export default class Calendar {
         this.timetable = timetab;
     }
 
+    loadLocalization() {
+        this.locale = {
+            lang: document.querySelector('#l-lang').innerHTML,
+            today: document.querySelector('#l-today').innerHTML,
+            month: document.querySelector('#l-month').innerHTML,
+            week: document.querySelector('#l-week').innerHTML,
+            day: document.querySelector('#l-day').innerHTML,
+            type: document.querySelector('#l-type').innerHTML,
+            audience: document.querySelector('#l-audience').innerHTML,
+            teachers: document.querySelector('#l-teachers').innerHTML,
+            groups: document.querySelector('#l-groups').innerHTML,
+            dayUpper: document.querySelector('#l-dayUpper').innerHTML,
+            time: document.querySelector('#l-time').innerHTML
+        }
+    }
+
     loadEvents(events) {
         events.forEach(async (event) => {
             this.addEvent(event);
+        });
+    }
+
+    loadAllCustomEvents() {
+        let events = this.storage.getCustomEvents();
+        events.forEach(async (event) => {
+            let calendarEvent = this.calendar.addEvent(event);
+            calendarEvent.setProp('editable', true);
+            console.log(calendarEvent.toPlainObject());
         });
     }
 
@@ -99,6 +128,14 @@ export default class Calendar {
     }
 
     onEventClick(info) {
+        if(info.event.extendedProps.subject) {
+            this.onFixedEvent(info);
+        } else {
+            this.onCustomEvent(info);
+        }
+    }
+
+    onFixedEvent(info) {
         let parser = new Parser(this.timetable);
 
         console.log(info.event);
@@ -123,6 +160,20 @@ export default class Calendar {
             groups += `${parser.getGroupById(id).name} `;
         });
 
-        alert(`${title}\n\nТип: ${type} (${currentLesson}/${lessonsCount})\nАудитория: ${auditory}\nПреподаватели: ${teachers}\nГруппы: ${groups}\nДень: ${day}\nВремя: ${start} - ${end}`);
+        alert(`${title}\n\n${this.locale.type}: ${type} (${currentLesson}/${lessonsCount})\n${this.locale.audience}: ${auditory}\n${this.locale.teachers}: ${teachers}\n${this.locale.groups}: ${groups}\n${this.locale.dayUpper}: ${day}\n${this.locale.time}: ${start} - ${end}`);
+    }
+
+    onCustomEvent(info) {
+        console.log(info);
+    }
+
+    onSelect(info) {
+        console.log(info);
+        this.popup.open(info);
+        
+    }
+
+    onEventChange(info) {
+        this.storage.updateCustomEvent(info.event, info.oldEvent);
     }
 } 

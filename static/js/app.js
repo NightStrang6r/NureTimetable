@@ -71,6 +71,7 @@ export default class App {
         } else {
             this.calendar.setTimetable(timetable);
             this.calendar.loadEvents(timetable.events);
+            this.calendar.loadAllCustomEvents();
         }
 
         this.calendar.render();

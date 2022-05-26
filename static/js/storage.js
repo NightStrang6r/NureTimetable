@@ -71,6 +71,55 @@ export default class Storage {
         return null;
     }
 
+    saveCustomEvents(events) {
+        let updatedEvents = [];
+
+        events.forEach(event => {
+            updatedEvents.push(event);
+        });
+
+        localStorage.customEvents = JSON.stringify(updatedEvents);
+    }
+
+    addCustomEvent(event) {
+        let events = [];
+
+        if(localStorage.customEvents) {
+            events = JSON.parse(localStorage.customEvents);
+        }
+        
+        events.push(event);
+        localStorage.customEvents = JSON.stringify(events);
+    }
+
+    getCustomEvents() {
+        if(localStorage.customEvents) return JSON.parse(localStorage.customEvents);
+        return [];
+    }
+
+    updateCustomEvent(newEvent, oldEvent) {
+        let events = this.getCustomEvents();
+
+        events.forEach((event, index) => {
+            //if(event.allDay != oldEvent.allDay) return;
+            console.log(1)
+            if(new Date(event.start).getTime() != oldEvent.start.getTime()) return;
+            console.log(2)
+            if(new Date(event.end).getTime() != oldEvent.end.getTime()) return;
+            console.log(3)
+            if(event.title != oldEvent.title) return;
+            console.log(4)
+            if(String(event.extendedProps.description) != oldEvent.extendedProps.description) return;
+            console.log(5)
+
+            events.splice(index, 1);
+            events.push(newEvent);
+            console.log('Event updated');
+        });
+
+        this.saveCustomEvents(events);
+    }
+
     deleteCacheById(id) {
         let timetables = this.getTimetables();
 

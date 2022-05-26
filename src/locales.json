@@ -26,7 +26,11 @@
         "today": "сегодня",
         "month": "месяц",
         "week": "неделя",
-        "day": "день"
+        "day": "день",
+        "type": "Тип",
+        "audienceUpper": "Аудитория",
+        "dayUpper": "День",
+        "timeUpper": "Время"
     },
     "uk": {
         "lang": "uk",
@@ -55,7 +59,11 @@
         "today": "сьогодні",
         "month": "місяць",
         "week": "тиждень",
-        "day": "день"
+        "day": "день",
+        "type": "Тип",
+        "audienceUpper": "Аудиторія",
+        "dayUpper": "День",
+        "timeUpper": "Час"
     },
     "en": {
         "lang": "en",
@@ -84,6 +92,10 @@
         "today": "today",
         "month": "month",
         "week": "week",
-        "day": "day"
+        "day": "day",
+        "type": "Type",
+        "audienceUpper": "Audience",
+        "dayUpper": "Day",
+        "timeUpper": "Time"
     }
 }

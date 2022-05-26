@@ -1,7 +1,9 @@
 export default class Popup {
     constructor(popupSelector, triggerSelector) {
         this.popupEl = document.querySelector(popupSelector);
-        this.popupTriggerEl = document.querySelector(triggerSelector);
+        
+        if(triggerSelector != null)
+            this.popupTriggerEl = document.querySelector(triggerSelector);
 
         this.setupListeners();
     }
