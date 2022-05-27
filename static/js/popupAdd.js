@@ -38,6 +38,11 @@ export default class PopupAdd extends Popup {
 
     save() {
         let selected = this.listController.getSelected();
+        
+        if(selected.length == 0) {
+            this.storage.deleteSelected();
+        }
+
         this.storage.saveTimetables(selected);
         this.close();
     }

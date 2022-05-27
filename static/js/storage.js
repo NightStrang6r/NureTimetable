@@ -34,6 +34,10 @@ export default class Storage {
         onTimetablesSaved = callback;
     }
 
+    deleteSelected() {
+        return delete localStorage.selected;
+    }
+
     // Сохраняет id выбранного расписания
     saveSelected(id) {
         localStorage.selected = id;
@@ -101,23 +105,38 @@ export default class Storage {
         let events = this.getCustomEvents();
 
         events.forEach((event, index) => {
-            //if(event.allDay != oldEvent.allDay) return;
-            console.log(1)
-            if(new Date(event.start).getTime() != oldEvent.start.getTime()) return;
-            console.log(2)
-            if(new Date(event.end).getTime() != oldEvent.end.getTime()) return;
-            console.log(3)
-            if(event.title != oldEvent.title) return;
-            console.log(4)
-            if(String(event.extendedProps.description) != oldEvent.extendedProps.description) return;
-            console.log(5)
+            if(!this.isEventEqual(event, oldEvent)) return;
 
             events.splice(index, 1);
-            events.push(newEvent);
-            console.log('Event updated');
+
+            if(newEvent != null) {
+                newEvent.allDayEvent = true;
+                events.push(newEvent);
+                console.log('Storage: Event updated');
+                return;
+            }
+
+            console.log('Storage: Event removed');
         });
 
         this.saveCustomEvents(events);
+    }
+
+    isEventEqual(event1, event2) {
+        //if(event1.allDay != event2.allDay) return;
+        //console.log(1)
+        if(event2.start && event2.end) {
+            if(new Date(event1.start).getTime() != event2.start.getTime()) return false;
+            //console.log(2)
+            if(new Date(event1.end).getTime() != event2.end.getTime()) return false;
+            //console.log(3)
+        }
+        if(event1.title != event2.title) return false;
+        //console.log(4)
+        if(String(event1.extendedProps.description) != event2.extendedProps.description) return false;
+        //console.log(5)
+
+        return true;
     }
 
     deleteCacheById(id) {
@@ -285,6 +304,9 @@ export default class Storage {
     }
 
     clear() {
+        let lToClearCache = document.querySelector('#l-toClearCache');
+        if(!confirm(lToClearCache.innerHTML)) return;
+
         localStorage.clear();
         this.deleteAllCookies();
         window.location.reload();

@@ -69,10 +69,12 @@
             </label>
             <div id="sidebarMenu">
                 <ul class="sidebarMenuInner">
-                    <li><a href="#">${addEvent}</a></li>
                     <li class="clear-button"><a href="#">${clearCache}</a></li>
                     <li class="cd-popup-language-trigger"><a href="#">${language}</a></li>
                 </ul>
+                <div class="d-none">
+                    <div id="l-toClearCache">Вы уверены, что хотите удалить все данные сайта?</div>
+                </div>
             </div>
         </div>
         <!-- /Sidebar -->
@@ -99,6 +101,7 @@
                 <div id="l-groups">${groups}</div>
                 <div id="l-dayUpper">${dayUpper}</div>
                 <div id="l-time">${timeUpper}</div>
+                <div id="l-toDelete">Вы уверены, что хотите удалить это событие?</div>
             </div>
         </div>
         <!-- /Calendar -->
@@ -151,6 +154,7 @@
                     <div id="test">${tests}</div>
                     <div id="exam">${exams}</div>
                     <div id="course_work">${courseWorks}</div>
+                    <div id="custom_event">Свои события</div>
                 </div>
                 <div class="popup-down">
                     <button class="button save-button popup-filter-save">${save}</button>
@@ -181,8 +185,8 @@
         </div>
         <!-- /Popup-Language -->
 
-        <!-- Popup-Event -->
-        <div class="cd-popup cd-popup-event d-none" role="alert">
+        <!-- Popup-Event-Add -->
+        <div class="cd-popup cd-popup-event-add d-none" role="alert">
             <div class="cd-popup-container">
                 <p>Событие</p>
                 <div class="event-form">
@@ -196,6 +200,10 @@
                         <textarea class="form-control form-textarea event-description" rows="3"></textarea>
                         <p class="help-block">Можно не заполнять</p>
                     </div>
+                    <div class="names d-none">
+                        <div id="l-tooLongName">В названии должно быть не больше 150 символов.</div>
+                        <div id="l-tooLongDescription">В описании должно быть не больше 500 символов.</div>
+                    </div>
                 </div>
                 <div class="popup-down">
                     <button class="button save-button popup-event-save">${save}</button>
@@ -203,6 +211,27 @@
                 <a class="cd-popup-close img-replace"></a>
             </div>
         </div>
-        <!-- /Popup-Event -->
+        <!-- /Popup-Event-Add -->
+
+        <!-- Popup-Event-View -->
+        <div class="cd-popup cd-popup-event-view d-none" role="alert">
+            <div class="cd-popup-container">
+                <p>Событие</p>
+                <div class="event-data">
+                    <div class="event-item event-data-title">
+                        
+                    </div>
+                    <div class="event-data-description">
+                        
+                    </div>
+                </div>
+                <div class="popup-down">
+                    <button class="button delete-button event-data-delete">Удалить</button>
+                    <button class="button edit-button event-data-edit">Редактировать</button>
+                </div>
+                <a class="cd-popup-close img-replace"></a>
+            </div>
+        </div>
+        <!-- /Popup-Event-View -->
     </body>
 </html>

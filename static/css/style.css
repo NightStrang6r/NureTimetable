@@ -543,7 +543,6 @@ input[type=checkbox]:checked ~ .sidebarIconToggle > .diagonal.part-2 {
 
 .save-button {
     background-color: #4CAF50;
-    margin-right: 21px;
     border-radius: 4px;
     padding: 9px 18px;
     margin-right: 20px;
@@ -568,9 +567,9 @@ input[type=checkbox]:checked ~ .sidebarIconToggle > .diagonal.part-2 {
     margin-right: auto;
 }
 
-/* POPUP-EVENT */
-.cd-popup-event .cd-popup-container {
-    width: 40%;
+/* POPUP-EVENT-ADD */
+.cd-popup-event-add .cd-popup-container {
+    width: 35%;
 }
 
 .event-form {
@@ -599,6 +598,10 @@ input[type=checkbox]:checked ~ .sidebarIconToggle > .diagonal.part-2 {
     transition: border-color ease-in-out 0.15s,box-shadow ease-in-out 0.15s;
 }
 
+.form-group {
+    margin-bottom: 10px;
+}
+
 .form-group > label {
     font-size: 9px;
     line-height: 14px;
@@ -613,7 +616,6 @@ input[type=checkbox]:checked ~ .sidebarIconToggle > .diagonal.part-2 {
 .event-form .help-block {
     display: block;
     margin-top: 5px;
-    margin-bottom: 10px;
     color: #626262;
     margin: 0 0 10px 0;
     padding: 0;
@@ -622,6 +624,51 @@ input[type=checkbox]:checked ~ .sidebarIconToggle > .diagonal.part-2 {
 
 .form-textarea {
     resize: vertical;
+}
+
+/* POPUP-EVENT-VIEW */
+.cd-popup-event-view .cd-popup-container {
+    width: 35%;
+}
+
+.event-data {
+    text-align: left;
+    margin: 0 15px 15px 15px;
+}
+
+.event-item {
+    margin-bottom: 10px;
+}
+
+.event-data-title {
+    font-size: 20px;
+    word-wrap: break-word;
+}
+
+.event-data-description {
+    word-wrap: break-word;
+}
+
+.delete-button {
+    background-color: #af534c;
+    border-radius: 4px;
+    padding: 9px 18px;
+    margin-right: 20px;
+}
+
+.delete-button:hover {
+    background-color: #8a413c;
+}
+
+.edit-button {
+    background-color: #4c77af;
+    border-radius: 4px;
+    padding: 9px 18px;
+    margin-right: 20px;
+}
+
+.edit-button:hover {
+    background-color: #3e608d;
 }
 
 /* CHECKBOXES */

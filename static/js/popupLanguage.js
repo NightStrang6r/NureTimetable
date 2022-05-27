@@ -18,7 +18,6 @@ export default class PopupLanguage extends Popup {
 
         let lang = this.storage.getLanguage();
         this.select.value = lang;
-        console.log(lang);
     }
 
     save() {

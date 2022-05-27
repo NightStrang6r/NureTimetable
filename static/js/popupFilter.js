@@ -39,6 +39,9 @@ export default class PopupAdd extends Popup {
             }
         }
 
+        // Добавляем кастомные события (этот вариант будет всегда, вне зависимости от расписания)
+        filterTypes.push('custom_event');
+
         // Добавляем значения фильтра на страницу
         for(let i = 0; i < filterTypes.length; i++) {
             let type = filterTypes[i];

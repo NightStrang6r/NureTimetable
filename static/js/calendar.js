@@ -1,6 +1,7 @@
 import Parser from './parser.js';
 import Storage from './storage.js';
-import PopupEvent from './popupEvent.js';
+import PopupEventAdd from './popupEventAdd.js';
+import PopupEventView from './popupEventView.js';
 
 export default class Calendar {
     constructor(selector) {
@@ -37,7 +38,7 @@ export default class Calendar {
                 omitZeroMinute: false,
                 meridiem: 'short'
             },
-            unselectCancel: '.event-form',
+            unselectCancel: '.cd-popup-container',
             select: (event) => this.onSelect(event),
             eventClick: (event) => this.onEventClick(event),
             eventChange: (event) => this.onEventChange(event)
@@ -45,7 +46,8 @@ export default class Calendar {
     
         this.calendar = new FullCalendar.Calendar(calendarEl, options);
         this.storage = new Storage();
-        this.popup = new PopupEvent('.cd-popup-event', this.calendar);
+        this.popupAdd = new PopupEventAdd('.cd-popup-event-add', this);
+        this.popupView = new PopupEventView('.cd-popup-event-view', this);
     }
 
     render() {
@@ -72,7 +74,8 @@ export default class Calendar {
             teachers: document.querySelector('#l-teachers').innerHTML,
             groups: document.querySelector('#l-groups').innerHTML,
             dayUpper: document.querySelector('#l-dayUpper').innerHTML,
-            time: document.querySelector('#l-time').innerHTML
+            time: document.querySelector('#l-time').innerHTML,
+            toDelete: document.querySelector('#l-toDelete').innerHTML
         }
     }
 
@@ -84,10 +87,13 @@ export default class Calendar {
 
     loadAllCustomEvents() {
         let events = this.storage.getCustomEvents();
+        let filters = this.storage.getFilters();
+        
         events.forEach(async (event) => {
+            if(filters && filters.includes('custom_event')) return;
+
             let calendarEvent = this.calendar.addEvent(event);
             calendarEvent.setProp('editable', true);
-            console.log(calendarEvent.toPlainObject());
         });
     }
 
@@ -138,7 +144,8 @@ export default class Calendar {
     onFixedEvent(info) {
         let parser = new Parser(this.timetable);
 
-        console.log(info.event);
+        console.log('Calendar: Fixed event click:');
+        console.log(info);
         let properties = info.event.extendedProps;
 
         let title = properties.subject.title;
@@ -164,16 +171,18 @@ export default class Calendar {
     }
 
     onCustomEvent(info) {
+        console.log('Calendar: Custom event click:');
         console.log(info);
+        this.popupView.open(info);
     }
 
     onSelect(info) {
+        console.log('Calendar: Area selected:');
         console.log(info);
-        this.popup.open(info);
-        
+        this.popupAdd.open(info);
     }
 
     onEventChange(info) {
         this.storage.updateCustomEvent(info.event, info.oldEvent);
     }
-} 
+}
