@@ -26,7 +26,11 @@ export default class PopupEventAdd extends Popup {
         this.info = info;
         this.popupEl.classList.add('is-visible');
 
-        if(!info.event) return;
+        if(!info.event) {
+            this.popupNameEl.value =  '';
+            this.popupDescriptionEl.value = '';
+            return;
+        };
 
         if(info.event.title) {
             this.info.editing = true;
@@ -39,6 +43,11 @@ export default class PopupEventAdd extends Popup {
     }
 
     close() {
+        if(this.popupNameEl.value.length > 0 || this.popupDescriptionEl.value.length > 0) {
+            let lUnsavedData = document.querySelector('#l-unsavedData');
+            if(!confirm(lUnsavedData.innerHTML)) return;
+        }
+
         super.close();
         this.calendar.unselect();
     }

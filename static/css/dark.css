@@ -441,6 +441,31 @@ select {
 .save-button:hover {
     background-color: rgb(48, 109, 50);
 }
+.form-control {
+    color: rgb(211, 207, 201);
+    background-color: rgb(24, 26, 27);
+    background-image: none;
+    border-color: rgb(56, 60, 63);
+    box-shadow: rgba(0, 0, 0, 0.08) 0px 1px 1px inset;
+}
+.form-group > label {
+    color: rgb(168, 160, 149);
+}
+.event-form .help-block {
+    color: rgb(170, 163, 152);
+}
+.delete-button {
+    background-color: rgb(140, 66, 61);
+}
+.delete-button:hover {
+    background-color: rgb(110, 52, 48);
+}
+.edit-button {
+    background-color: rgb(61, 95, 140);
+}
+.edit-button:hover {
+    background-color: rgb(50, 77, 113);
+}
 .custom-checkbox > span::before {
     border-color: rgb(69, 75, 78);
 }

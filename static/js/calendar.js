@@ -21,6 +21,8 @@ export default class Calendar {
                 week:     this.locale.week,
                 day:      this.locale.day
             },
+            moreLinkText: '',
+            allDayText: '',
             initialView: 'timeGridWeek',
             locale: this.locale.lang,
             selectable: true,

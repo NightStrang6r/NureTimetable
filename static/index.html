@@ -73,7 +73,7 @@
                     <li class="cd-popup-language-trigger"><a href="#">${language}</a></li>
                 </ul>
                 <div class="d-none">
-                    <div id="l-toClearCache">Вы уверены, что хотите удалить все данные сайта?</div>
+                    <div id="l-toClearCache">${toClearCache}</div>
                 </div>
             </div>
         </div>
@@ -101,7 +101,7 @@
                 <div id="l-groups">${groups}</div>
                 <div id="l-dayUpper">${dayUpper}</div>
                 <div id="l-time">${timeUpper}</div>
-                <div id="l-toDelete">Вы уверены, что хотите удалить это событие?</div>
+                <div id="l-toDelete">${toDeleteEvent}</div>
             </div>
         </div>
         <!-- /Calendar -->
@@ -154,7 +154,7 @@
                     <div id="test">${tests}</div>
                     <div id="exam">${exams}</div>
                     <div id="course_work">${courseWorks}</div>
-                    <div id="custom_event">Свои события</div>
+                    <div id="custom_event">${customEvents}</div>
                 </div>
                 <div class="popup-down">
                     <button class="button save-button popup-filter-save">${save}</button>
@@ -188,21 +188,22 @@
         <!-- Popup-Event-Add -->
         <div class="cd-popup cd-popup-event-add d-none" role="alert">
             <div class="cd-popup-container">
-                <p>Событие</p>
+                <p>${event}</p>
                 <div class="event-form">
                     <div class="form-group">
-                        <label class="control-label">Краткое описание</label>
+                        <label class="control-label">${shortDescription}</label>
                         <input type="text" class="form-control event-name">
-                        <p class="help-block">Название</p>
+                        <p class="help-block">${name}</p>
                     </div>
                     <div class="form-group">
-                        <label class="control-label">Подробное описание</label>
+                        <label class="control-label">${fullDescription}</label>
                         <textarea class="form-control form-textarea event-description" rows="3"></textarea>
-                        <p class="help-block">Можно не заполнять</p>
+                        <p class="help-block">${mayNotBeFilled}</p>
                     </div>
                     <div class="names d-none">
-                        <div id="l-tooLongName">В названии должно быть не больше 150 символов.</div>
-                        <div id="l-tooLongDescription">В описании должно быть не больше 500 символов.</div>
+                        <div id="l-tooLongName">${tooLongName}</div>
+                        <div id="l-tooLongDescription">${tooLongDescription}</div>
+                        <div id="l-unsavedData">${unsavedData}</div>
                     </div>
                 </div>
                 <div class="popup-down">
@@ -216,7 +217,7 @@
         <!-- Popup-Event-View -->
         <div class="cd-popup cd-popup-event-view d-none" role="alert">
             <div class="cd-popup-container">
-                <p>Событие</p>
+                <p>${event}</p>
                 <div class="event-data">
                     <div class="event-item event-data-title">
                         
@@ -226,8 +227,8 @@
                     </div>
                 </div>
                 <div class="popup-down">
-                    <button class="button delete-button event-data-delete">Удалить</button>
-                    <button class="button edit-button event-data-edit">Редактировать</button>
+                    <button class="button delete-button event-data-delete">${delete}</button>
+                    <button class="button edit-button event-data-edit">${edit}</button>
                 </div>
                 <a class="cd-popup-close img-replace"></a>
             </div>

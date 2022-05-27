@@ -30,7 +30,20 @@
         "type": "Тип",
         "audienceUpper": "Аудитория",
         "dayUpper": "День",
-        "timeUpper": "Время"
+        "timeUpper": "Время",
+        "event": "Событие",
+        "toDeleteEvent": "Вы уверены, что хотите удалить это событие?",
+        "toClearCache": "Вы уверены, что хотите удалить все данные сайта?",
+        "customEvents": "Свои события",
+        "shortDescription": "Краткое описание",
+        "name": "Название",
+        "fullDescription": "Подробное описание",
+        "mayNotBeFilled": "Можно не заполнять",
+        "tooLongName": "В названии должно быть не больше 150 символов.",
+        "tooLongDescription": "В описании должно быть не больше 500 символов.",
+        "unsavedData": "В форме остались несохранённые данные. Вы точно хотите выйти?",
+        "delete": "Удалить",
+        "edit": "Редактировать"
     },
     "uk": {
         "lang": "uk",
@@ -63,7 +76,20 @@
         "type": "Тип",
         "audienceUpper": "Аудиторія",
         "dayUpper": "День",
-        "timeUpper": "Час"
+        "timeUpper": "Час",
+        "event": "Подія",
+        "toDeleteEvent": "Ви впевнені, що хочете видалити цю подію?",
+        "toClearCache": "Ви впевнені, що бажаєте видалити всі дані сайту?",
+        "customEvents": "Свої події",
+        "shortDescription": "Короткий опис",
+        "name": "Назва",
+        "fullDescription": "Докладний опис",
+        "mayNotBeFilled": "Можна не заповнювати",
+        "tooLongName": "У назві має бути не більше ніж 150 символів.",
+        "tooLongDescription": "В описі має бути не більше ніж 500 символів.",
+        "unsavedData": "У формі залишилися незбережені дані. Ви точно хочете вийти?",
+        "delete": "Видалити",
+        "edit": "Відредагувати"
     },
     "en": {
         "lang": "en",
@@ -96,6 +122,19 @@
         "type": "Type",
         "audienceUpper": "Audience",
         "dayUpper": "Day",
-        "timeUpper": "Time"
+        "timeUpper": "Time",
+        "event": "Event",
+        "toDeleteEvent": "Are you sure you want to delete this event?",
+        "toClearCache": "Are you sure you want to delete all site data?",
+        "customEvents": "Own events",
+        "shortDescription": "Short description",
+        "name": "Name",
+        "fullDescription": "Detailed description",
+        "mayNotBeFilled": "May not be filled",
+        "tooLongName": "The title should be no more than 150 characters.",
+        "tooLongDescription": "The description must be no more than 500 characters.",
+        "unsavedData": "There is unsaved data in the form. Are you sure you want to quit?",
+        "delete": "Delete",
+        "edit": "Edit"
     }
 }
