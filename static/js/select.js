@@ -41,7 +41,6 @@ export default class Select {
         let option = target.options[target.selectedIndex];
         if(option.dataset.id) {
             onSelected(option.dataset.id);
-            return;
         }
     }
 

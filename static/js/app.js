@@ -32,7 +32,7 @@ export default class App {
 
         if(lastTimetableId) {
             this.select.setSelected(lastTimetableId);
-            this.onSelectedCallback(lastTimetableId);
+            this.loadTimetable(lastTimetableId);
         } else {
             this.preloader.stop();
         }
@@ -42,9 +42,11 @@ export default class App {
         this.storage.onFiltersSaved((prop) => this.onFiltersSavedCallback(prop));
         this.reloadButton.addEventListener('click', (prop) => this.onReloadButton(prop));
         
+        this.popupAdd = new PopupAdd('.cd-popup-add', '.cd-popup-add-trigger');
         new PopupFilter('.cd-popup-filter', '.cd-popup-filter-trigger');
-        new PopupAdd('.cd-popup-add', '.cd-popup-add-trigger');
         new PopupLanguage('.cd-popup-language', '.cd-popup-language-trigger');
+
+        this.popupAdd.addOpenSelect('.timetable-select', 0);
     }
 
     async loadTimetable(id) {

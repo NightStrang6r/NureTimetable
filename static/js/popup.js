@@ -34,4 +34,14 @@ export default class Popup {
             this.close();
         }
     }
+
+    addOpenSelect(selector, selectId) {
+        let select = document.querySelector(selector);
+        if(select == null) return;
+        console.log(select);
+        select.addEventListener('input', (event) => {
+            if(select.selectedIndex != selectId) return;
+            this.open(event);
+        });
+    }
 }
