@@ -43,7 +43,8 @@
         "tooLongDescription": "В описании должно быть не больше 500 символов.",
         "unsavedData": "В форме остались несохранённые данные. Вы точно хотите выйти?",
         "delete": "Удалить",
-        "edit": "Редактировать"
+        "edit": "Редактировать",
+        "search": "Поиск..."
     },
     "uk": {
         "lang": "uk",
@@ -89,7 +90,8 @@
         "tooLongDescription": "В описі має бути не більше ніж 500 символів.",
         "unsavedData": "У формі залишилися незбережені дані. Ви точно хочете вийти?",
         "delete": "Видалити",
-        "edit": "Відредагувати"
+        "edit": "Відредагувати",
+        "search": "Пошук..."
     },
     "en": {
         "lang": "en",
@@ -135,6 +137,7 @@
         "tooLongDescription": "The description must be no more than 500 characters.",
         "unsavedData": "There is unsaved data in the form. Are you sure you want to quit?",
         "delete": "Delete",
-        "edit": "Edit"
+        "edit": "Edit",
+        "search": "Search..."
     }
 }

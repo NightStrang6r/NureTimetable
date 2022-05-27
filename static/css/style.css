@@ -455,7 +455,9 @@ input[type=checkbox]:checked ~ .sidebarIconToggle > .diagonal.part-2 {
     margin-right: 5px;
     cursor: pointer;
     border: 1px solid #ddd;
-    border-bottom: none;
+    border-top: none;
+    border-left: none;
+    border-right: none;
 }
  
  /* Стили для активной вкладки */
@@ -486,7 +488,13 @@ input[type=checkbox]:checked ~ .sidebarIconToggle > .diagonal.part-2 {
 }
 
 .popup-input {
+    display: flex;
+    justify-content: center;
     margin-top: 16px;
+}
+
+.input-search {
+    width: 70% !important;
 }
 
 .popup-list {

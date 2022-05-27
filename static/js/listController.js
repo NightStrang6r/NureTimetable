@@ -1,11 +1,11 @@
-let popupListEl = null;
-let selected = [];
-
 export default class ListController {
     constructor(listEl, storage) {
-        popupListEl = listEl;
-        popupListEl.addEventListener('click', this.onListClick);
-        selected = storage.getTimetables();
+        this.popupListEl = listEl;
+        
+        this.popupListEl.addEventListener('click', (event) => this.onListClick(event));
+
+        this.searchString = '';
+        this.selected = storage.getTimetables();
     }
 
     onListClick(event) {
@@ -17,9 +17,9 @@ export default class ListController {
         if(!listItem.className.includes('list-item-selected')) {
             listItem.classList.add('list-item-selected');
 
-            let type = popupListEl.dataset.type;
+            let type = this.popupListEl.dataset.type;
 
-            selected.push({
+            this.selected.push({
                 type: type,
                 id: listItem.dataset.id,
                 name: listItem.innerHTML
@@ -27,68 +27,51 @@ export default class ListController {
         } else {
             listItem.classList.remove('list-item-selected');
             
-            selected.forEach((item, index) => {
+            this.selected.forEach((item, index) => {
                 if(item.id == listItem.dataset.id && item.name == listItem.innerHTML) {
-                    selected.splice(index, 1);
+                    this.selected.splice(index, 1);
                 }
             });
         }
     }
 
-    loadGroupsList(items) {
-        popupListEl.dataset.type = "groups";
-
-        items.forEach((group) => {
-            if(!group) return;
-
-            let listItem = document.createElement('div');
-            listItem.className = 'list-item';
-            listItem.innerHTML = group.name;
-            listItem.dataset.id = group.id;
-
-            this.checkIfSelected(listItem);
-
-            popupListEl.append(listItem);
-        });
+    setSearch(search) {
+        this.searchString = search.toLowerCase();
     }
 
-    loadTeachersList(items) {
-        popupListEl.dataset.type = "teachers";
+    loadList(items, type) {
+        this.popupListEl.dataset.type = type;
+        let counter = 0;
 
-        items.forEach((teacher) => {
-            if(!teacher) return;
+        items.forEach((item) => {
+            if(!item) return;
 
-            let listItem = document.createElement('div');
-            listItem.className = 'list-item';
-            listItem.innerHTML = teacher.short_name;
-            listItem.dataset.id = teacher.id;
+            let name;
+            if(!item.name) {
+                name = item.short_name;
+            } else {
+                name = item.name;
+            }
 
-            this.checkIfSelected(listItem);
-
-            popupListEl.append(listItem);
-        });
-    }
-
-    loadAudiencesList(items) {
-        popupListEl.dataset.type = "audiences";
-
-        items.forEach((audience) => {
-            if(!audience) return;
+            if(!name.toLowerCase().includes(this.searchString)) return;
 
             let listItem = document.createElement('div');
             listItem.className = 'list-item';
-            listItem.innerHTML = audience.short_name;
-            listItem.dataset.id = audience.id;
+            listItem.innerHTML = name;
+            listItem.dataset.id = item.id;
 
             this.checkIfSelected(listItem);
 
-            popupListEl.append(listItem);
+            this.popupListEl.append(listItem);
+            counter++;
         });
+
+        console.log(`ListController: Search: found ${counter} elements.`);
     }
 
     checkIfSelected(listItem) {
-        selected.forEach((item) => {
-            if(item.type != popupListEl.dataset.type) return;
+        this.selected.forEach((item) => {
+            if(item.type != this.popupListEl.dataset.type) return;
 
             if(item.id == listItem.dataset.id) {
                 listItem.classList.add('list-item-selected');
@@ -97,10 +80,10 @@ export default class ListController {
     }
 
     setSelected(select) {
-        selected = select;
+        this.selected = select;
     }
 
     getSelected() {
-        return selected;
+        return this.selected;
     }
 }
