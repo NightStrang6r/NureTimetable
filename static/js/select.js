@@ -16,6 +16,7 @@ export default class Select {
 
         timetables.forEach(timetable => {
             let option = createOption(timetable.name, timetable.id, timetable.type);
+            if(option == null) return;
             select.append(option);
         });
     }
@@ -59,6 +60,8 @@ export default class Select {
     }
 
     createOption(name, id, type) {
+        if(!name || !id || !type) return null;
+        
         let option = document.createElement('option');
         option.innerHTML = name;
         option.dataset.id = id;
