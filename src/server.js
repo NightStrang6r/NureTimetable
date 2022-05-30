@@ -14,6 +14,7 @@ class Server {
 
         this.server.get('/', router.onIndex);
         this.server.get('/index.html', router.onIndex);
+        this.server.get('/auth', (req, res) => router.onAuth(req, res));
         this.server.get('/get', router.getTimetable);
         this.server.get('/getGroups', router.getGroups);
         this.server.get('/getTeachers', router.getTeachers);

@@ -3,12 +3,14 @@ const path = require('path');
 const fs = require('fs');
 const API = require('./API.js');
 const Locale = require('./locale.js');
+const Google = require('./google.js');
 
 class Router {
     constructor(staticPath) {
         Router.path = this.getPath(staticPath);
         Router.API = new API();
         Router.locale = new Locale(this.getPath('src/locales.json'), 'uk');
+        this.google = new Google(this.getPath('src/config.json'));
     }
 
     getPath(staticPath) {
@@ -110,6 +112,34 @@ class Router {
         } else {
             res.send('');
         }
+    }
+
+    async onAuth(req, res) {
+        if(req.cookies && req.cookies.key) {
+            let result = await this.google.parseJwt(req.cookies.key);
+            if(this.google.checkAuth(result)) {
+                res.send(result);
+            } else {
+                res.send('Invalid email. Relogin');
+            }
+            return;
+        }
+
+        if(req.query.code) {
+            let json = await this.google.getTokens(req.query.code);
+            let result = await this.google.parseJwt(json.id_token);
+
+            if(this.google.checkAuth(result)) {
+                res.cookie('key', json.id_token);
+                res.send('Cookie ok');
+            } else {
+                res.send('Invalid email');
+            }
+            
+            return;
+        }
+        
+        res.send(this.google.getAuthURL());
     }
 
     badRequest(res) {
