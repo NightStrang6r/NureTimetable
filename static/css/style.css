@@ -634,6 +634,15 @@ input[type=checkbox]:checked ~ .sidebarIconToggle > .diagonal.part-2 {
     resize: vertical;
 }
 
+.form-time-block {
+    display: inline-flex;
+    align-items: center;
+}
+
+.form-time {
+    width: inherit;
+}
+
 /* POPUP-EVENT-VIEW */
 .cd-popup-event-view .cd-popup-container {
     width: 35%;

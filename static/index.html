@@ -200,9 +200,23 @@
                         <textarea class="form-control form-textarea event-description" rows="3"></textarea>
                         <p class="help-block">${mayNotBeFilled}</p>
                     </div>
+                    <div class="form-group">
+                        <label class="control-label">${timeUpper}</label>
+                        <br />
+                        <div class="form-time-block">
+                            <input type="time" class="form-control form-time event-time-from">
+                            &nbsp;&mdash;&nbsp;
+                            <input type="time" class="form-control form-time event-time-to">
+                        </div>
+                    </div>
+                    <div class="form-group">
+                        <label class="control-label">Дата</label>
+                        <input type="date" class="form-control event-date">
+                    </div>
                     <div class="names d-none">
                         <div id="l-tooLongName">${tooLongName}</div>
                         <div id="l-tooLongDescription">${tooLongDescription}</div>
+                        <div id="l-invalidTime">${invalidTime}</div>
                         <div id="l-unsavedData">${unsavedData}</div>
                     </div>
                 </div>
@@ -222,7 +236,13 @@
                     <div class="event-item event-data-title">
                         
                     </div>
-                    <div class="event-data-description">
+                    <div class="event-item event-data-description">
+                        
+                    </div>
+                    <div class="event-data-time">
+                        
+                    </div>
+                    <div class="event-data-date">
                         
                     </div>
                 </div>
