@@ -7,9 +7,9 @@ const Auth = require('./auth.js');
 
 class Router {
     constructor(staticPath) {
-        Router.path = this.getPath(staticPath);
-        Router.API = new API();
-        Router.locale = new Locale(this.getPath('src/locales.json'), 'uk');
+        this.path = this.getPath(staticPath);
+        this.API = new API();
+        this.locale = new Locale(this.getPath('src/locales.json'), 'uk');
         this.auth = new Auth(this.getPath('src/config.json'));
     }
 
@@ -24,6 +24,8 @@ class Router {
     }
 
     async onIndex(req, res) {
+        this.authorize(req, res);
+
         let lang = 'uk';
 
         if(req.cookies && req.cookies.lang) {
@@ -32,21 +34,23 @@ class Router {
             res.cookie('lang', lang);
         }
 
-        let index = await Router.locale.translate(`${Router.path}/index.html`, lang);
+        let index = await this.locale.translate(`${this.path}/index.html`, lang);
         res.send(index);
     }
 
     static() {
-        return express.static(Router.path);
+        return express.static(this.path);
     }
 
     async getTimetable(req, res) {
         const id = Number(req.query.id);
 
         if(isNaN(id) || !req.query.type) {
-            res.status(400).send('Invalid request!');
+            this.badRequest(res);
             return;
         }
+
+        if(!this.authorize(req, res)) return;
 
         let typeId;
         switch (req.query.type) {
@@ -64,7 +68,7 @@ class Router {
                 break;
         }
 
-        const data = await Router.API.getTimetable(id, typeId);
+        const data = await this.API.getTimetable(id, typeId);
 
         res.setHeader('content-type', 'application/json');
         let error = false;
@@ -84,13 +88,13 @@ class Router {
     }
 
     async getGroups(req, res) {
-        const data = await Router.API.getGroups();
+        const data = await this.API.getGroups();
         res.setHeader('content-type', 'application/json');
         res.send(data);
     }
 
     async getTeachers(req, res) {
-        let data = await Router.API.getTeachers();
+        let data = await this.API.getTeachers();
         data = data.toString('utf8');
         data = data.replace(']}]}]}', ']}]}]}]}'); // This fixes cist json encoding error
         res.setHeader('content-type', 'application/json');
@@ -98,7 +102,7 @@ class Router {
     }
 
     async getAudiences(req, res) {
-        const data = await Router.API.getAudiences();
+        const data = await this.API.getAudiences();
         res.setHeader('content-type', 'application/json');
         res.send(data);
     }
@@ -108,68 +112,68 @@ class Router {
         res.status(200);
 
         if(req.cookies && req.cookies.dark == 'true') {
-            res.sendFile(`${Router.path}/css/dark.css`);
+            res.sendFile(`${this.path}/css/dark.css`);
         } else {
             res.send('');
         }
     }
 
-    authentication(req, res, next) {
-        if(req.cookies && req.cookies.key) {
-            let jwt = this.auth.verify(req.cookies.key);
+    authorize(req, res) {
+        let auth = false;
 
-            if(!jwt || !this.auth.checkAuth(jwt)) {
-                const data = `${this.auth.getClient()};${this.auth.getRedirect()}`;
-                res.cookie('client', data);
-                res.clearCookie('key');
+        // Если ключ авторизации существует и он верный, то auth = true
+        if(req.cookies && req.cookies.key) {
+            let user = this.auth.verify(req.cookies.key);
+
+            if(this.auth.checkAuth(user)) {
+                auth = true;
             }
-        } else {
+        }
+
+        // Если ключа нет либо он не верный, добавляем куки client, удаляем key
+        if(!auth && req.cookies && !req.cookies.client) {
             const data = `${this.auth.getClient()};${this.auth.getRedirect()}`;
             res.cookie('client', data);
             res.clearCookie('key');
         }
 
-        next();
+        // Если пользователь не авторизован, то не предоставляем доступ
+        if(!auth && req._parsedUrl.pathname != '/' && req.originalUrl != '/index.html') {
+            res.sendStatus(401);
+            return false;
+        }
+
+        return true;
     }
 
     async onAuth(req, res) {
-        if(req.cookies && req.cookies.key) {
-            let result = await this.auth.verify(req.cookies.key);
+        const redirect = this.auth.getMainLink();
 
-            if(this.auth.checkAuth(result)) {
-                res.location(this.auth.getMainLink());
-                res.sendStatus(302);
-            } else {
-                res.send('Invalid email. Relogin');
-            }
-
+        if(!req.query.code) {
+            res.location(redirect);
+            res.sendStatus(302);
             return;
         }
 
-        if(req.query.code) {
-            let json = await this.auth.getToken(req.query.code);
-            let result = await this.auth.parse(json.id_token);
+        let userData = await this.auth.getToken(req.query.code);
+        let result = await this.auth.parse(userData.id_token);
 
-            if(this.auth.checkAuth(result)) {
-                result = {
-                    email: result.email,
-                    email_verified: result.email_verified
-                };
+        if(this.auth.checkAuth(result)) {
+            result = {
+                email: result.email,
+                email_verified: result.email_verified
+            };
 
-                let jwt = this.auth.sign(result);
-                res.cookie('key', jwt);
-                res.clearCookie('client');
+            let jwt = this.auth.sign(result);
+            res.cookie('key', jwt);
+            res.clearCookie('client');
 
-                res.location(this.auth.getMainLink());
-                res.sendStatus(302);
-            } else {
-                res.send('Invalid email');
-            }
-            
-            return;
+            res.location(redirect);
+            res.sendStatus(302);
+        } else {
+            res.location(`${redirect}/?auth=error`);
+            res.sendStatus(302);
         }
-        
-        res.send('OK');
     }
 
     badRequest(res) {

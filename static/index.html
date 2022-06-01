@@ -71,6 +71,7 @@
                 <ul class="sidebarMenuInner">
                     <li class="clear-button"><a href="#">${clearCache}</a></li>
                     <li class="cd-popup-language-trigger"><a href="#">${language}</a></li>
+                    <li class="logout-button"><a href="#">${logout}</a></li>
                 </ul>
                 <div class="d-none">
                     <div id="l-toClearCache">${toClearCache}</div>
@@ -91,6 +92,9 @@
                 <img src="assets/google.png" />
                 &nbsp;Sign in with Google
             </button>
+            <div class="name d-none">
+                <div id="l-authError">${authError}</div>
+            </div>
         </div>
         <!-- /Auth -->
 

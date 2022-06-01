@@ -4,9 +4,15 @@ export default class API {
         const options = {
             method: 'GET'
         };
+
+        let res, json;
     
-        const res = await fetch(url, options);
-        const json = await res.json();
+        try {
+            res = await fetch(url, options);
+            json = await res.json();
+        } catch (err) {
+            json = false;
+        }
     
         return json;
     }

@@ -46,7 +46,9 @@
         "unsavedData": "В форме остались несохранённые данные. Вы точно хотите выйти?",
         "delete": "Удалить",
         "edit": "Редактировать",
-        "search": "Поиск..."
+        "search": "Поиск...",
+        "authError": "Не удалось войти. Убедитесь, что заходите с корпоративной почты @nure.ua",
+        "logout": "Выйти"
     },
     "uk": {
         "lang": "uk",
@@ -95,7 +97,9 @@
         "unsavedData": "У формі залишилися незбережені дані. Ви точно хочете вийти?",
         "delete": "Видалити",
         "edit": "Відредагувати",
-        "search": "Пошук..."
+        "search": "Пошук...",
+        "authError": "Не вдалось увійти. Переконайтеся, що ви заходите з корпоративної пошти @nure.ua",
+        "logout": "Вийти"
     },
     "en": {
         "lang": "en",
@@ -144,6 +148,8 @@
         "unsavedData": "There is unsaved data in the form. Are you sure you want to quit?",
         "delete": "Delete",
         "edit": "Edit",
-        "search": "Search..."
+        "search": "Search...",
+        "authError": "Failed to sign in. Make sure you log in from @nure.ua corporate mail.",
+        "logout": "Logout"
     }
 }

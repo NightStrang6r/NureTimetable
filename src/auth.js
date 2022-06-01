@@ -56,7 +56,6 @@ class Auth {
         } catch (e) {
             return false;
         }
-        
     }
 
     async parse(token) {
@@ -71,8 +70,9 @@ class Auth {
     }
 
     checkAuth(data) {
-        if(data 
-            && data.email 
+        if(!data) return false;
+
+        if(    data.email 
             && data.email_verified 
             && data.email.includes('@nure.ua') 
             && data.email_verified == true) return true;

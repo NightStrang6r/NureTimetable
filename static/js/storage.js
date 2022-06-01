@@ -105,6 +105,10 @@ export default class Storage {
         this.setCookie('key', auth);
     }
 
+    deleteAuth() {
+        this.deleteCookie('key');
+    }
+
     getAuth() {
         let auth = this.getCookie('key');
         if(auth) return auth;
@@ -209,6 +213,12 @@ export default class Storage {
 
         // Если кэша нет, используем API
         this.timetable = await api.getTimetable(id, type);
+
+        if(!this.timetable) {
+            this.timetable = {};
+            this.timetable.error = true;
+            return this.timetable;
+        }
 
         // Готовим массив для кэша
         timetables.push({
