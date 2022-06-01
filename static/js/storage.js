@@ -101,6 +101,22 @@ export default class Storage {
         return [];
     }
 
+    setAuth(auth) {
+        this.setCookie('key', auth);
+    }
+
+    getAuth() {
+        let auth = this.getCookie('key');
+        if(auth) return auth;
+        return null;
+    }
+
+    getClient() {
+        let client = this.getCookie('client');
+        if(client) return decodeURIComponent(client).split(';');
+        return null;
+    }
+
     updateCustomEvent(newEvent, oldEvent) {
         let events = this.getCustomEvents();
 

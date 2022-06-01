@@ -6,6 +6,7 @@ import PopupAdd from './popupAdd.js';
 import DarkTheme from './darkTheme.js';
 import PopupFilter from './popupFilter.js';
 import PopupLanguage from './popupLanguage.js';
+import Auth from './auth.js';
 
 export default class App {
     run() {
@@ -15,7 +16,7 @@ export default class App {
 
     async init() {
         this.darkTheme = new DarkTheme('.dark-trigger');
-        this.preloader = new Preloader('#preloader-img');
+        this.preloader = new Preloader('.preloader');
         this.preloader.start();
     }
 
@@ -23,6 +24,8 @@ export default class App {
         this.calendar = new Calendar('#calendar');
         this.storage = new Storage();
         this.select = new Select('.timetable-select');
+        this.auth = new Auth('.auth');
+        
         this.reloadButton = document.querySelector('.reload-trigger');
         this.storage.setClearTrigger('.clear-button');
 
@@ -34,6 +37,7 @@ export default class App {
             this.select.setSelected(lastTimetableId);
             this.loadTimetable(lastTimetableId);
         } else {
+            
             this.preloader.stop();
         }
 

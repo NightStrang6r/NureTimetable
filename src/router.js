@@ -3,14 +3,14 @@ const path = require('path');
 const fs = require('fs');
 const API = require('./API.js');
 const Locale = require('./locale.js');
-const Google = require('./google.js');
+const Auth = require('./auth.js');
 
 class Router {
     constructor(staticPath) {
         Router.path = this.getPath(staticPath);
         Router.API = new API();
         Router.locale = new Locale(this.getPath('src/locales.json'), 'uk');
-        this.google = new Google(this.getPath('src/config.json'));
+        this.auth = new Auth(this.getPath('src/config.json'));
     }
 
     getPath(staticPath) {
@@ -114,24 +114,54 @@ class Router {
         }
     }
 
+    authentication(req, res, next) {
+        if(req.cookies && req.cookies.key) {
+            let jwt = this.auth.verify(req.cookies.key);
+
+            if(!jwt || !this.auth.checkAuth(jwt)) {
+                const data = `${this.auth.getClient()};${this.auth.getRedirect()}`;
+                res.cookie('client', data);
+                res.clearCookie('key');
+            }
+        } else {
+            const data = `${this.auth.getClient()};${this.auth.getRedirect()}`;
+            res.cookie('client', data);
+            res.clearCookie('key');
+        }
+
+        next();
+    }
+
     async onAuth(req, res) {
         if(req.cookies && req.cookies.key) {
-            let result = await this.google.parseJwt(req.cookies.key);
-            if(this.google.checkAuth(result)) {
-                res.send(result);
+            let result = await this.auth.verify(req.cookies.key);
+
+            if(this.auth.checkAuth(result)) {
+                res.location(this.auth.getMainLink());
+                res.sendStatus(302);
             } else {
                 res.send('Invalid email. Relogin');
             }
+
             return;
         }
 
         if(req.query.code) {
-            let json = await this.google.getTokens(req.query.code);
-            let result = await this.google.parseJwt(json.id_token);
+            let json = await this.auth.getToken(req.query.code);
+            let result = await this.auth.parse(json.id_token);
 
-            if(this.google.checkAuth(result)) {
-                res.cookie('key', json.id_token);
-                res.send('Cookie ok');
+            if(this.auth.checkAuth(result)) {
+                result = {
+                    email: result.email,
+                    email_verified: result.email_verified
+                };
+
+                let jwt = this.auth.sign(result);
+                res.cookie('key', jwt);
+                res.clearCookie('client');
+
+                res.location(this.auth.getMainLink());
+                res.sendStatus(302);
             } else {
                 res.send('Invalid email');
             }
@@ -139,7 +169,7 @@ class Router {
             return;
         }
         
-        res.send(this.google.getAuthURL());
+        res.send('OK');
     }
 
     badRequest(res) {

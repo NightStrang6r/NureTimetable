@@ -175,7 +175,7 @@ select::-ms-expand {
     letter-spacing: 1.25px;
 }
 #sidebarMenu {
-    z-index: 1;
+    z-index: 2;
     height: 100%;
     position: fixed;
     left: 0;
@@ -227,7 +227,7 @@ input[type=checkbox] {
     box-sizing: border-box;
     cursor: pointer;
     position: absolute;
-    z-index: 1;
+    z-index: 2;
     height: 100%;
     width: 100%;
     top: 21px;
@@ -280,10 +280,44 @@ input[type=checkbox]:checked ~ .sidebarIconToggle > .diagonal.part-2 {
     transform: rotate(-135deg);
     margin-top: -9px;
 }
+
+/* -------------------------------- 
+  
+  AUTH 
+
+-------------------------------- */
+
+.auth {
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    position: fixed;
+    top: 50px;
+    left: 0;
+    right: 0;
+    bottom: 0;
+    z-index: 1;
+}
+
+.auth .auth-button {
+    display: inline-flex;
+    justify-content: center;
+    color: black;
+    background-color: #e4e4e4;
+    align-items: center;
+}
+
+.auth .auth-button:hover {
+    background-color: #d3d3d3;
+}
+
+.auth-button img {
+    width: 15px;
+}
   
 /* -------------------------------- 
   
-  xpopup 
+  POPUP 
 
 -------------------------------- */
 .cd-popup {
@@ -300,7 +334,7 @@ input[type=checkbox]:checked ~ .sidebarIconToggle > .diagonal.part-2 {
     transition: opacity 0.3s 0s, visibility 0s 0.3s;
 }
 .cd-popup.is-visible {
-    z-index: 2;
+    z-index: 3;
     opacity: 1;
     visibility: visible;
     -webkit-transition: opacity 0.3s 0s, visibility 0s 0s;

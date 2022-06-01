@@ -11,6 +11,7 @@ class Server {
     run() {
         const router = new Router('static');
         this.server.use(cookieParser());
+        this.server.use((req, res, next) => {router.authentication(req, res, next)});
 
         this.server.get('/', router.onIndex);
         this.server.get('/index.html', router.onIndex);

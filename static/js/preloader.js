@@ -1,18 +1,17 @@
-let preloaderImg = null;
-
 export default class Preloader {
     constructor(selector) {
-        preloaderImg = document.querySelector(selector);
+        this.preloaderEl = document.querySelector(selector);
+        this.preloaderImg = this.preloaderEl.children[0];
     }
 
     async start() {
-        preloaderImg.classList.remove('d-none');
+        this.preloaderEl.classList.remove('d-none');
         //preloaderImg.src = this.getRandomPreloader();
         //console.log(typeof preloaderImg);
     }
 
     stop() {
-        preloaderImg.classList.add('d-none');
+        this.preloaderEl.classList.add('d-none');
     }
 
     getRandomPreloader() {

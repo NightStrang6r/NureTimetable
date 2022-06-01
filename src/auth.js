@@ -2,26 +2,27 @@ const fetch = require('node-fetch');
 const fs = require('fs');
 const jwt = require('jsonwebtoken');
 
-class Google {
+class Auth {
     constructor(configPath) {
         this.config = JSON.parse(fs.readFileSync(configPath));
     }
 
-    getAuthURL() {
-        const rootUrl = 'https://accounts.google.com/o/oauth2/v2/auth';
-        const options = 
-            'redirect_uri=' + this.config.redirect +
-            '&client_id=' + this.config.client +
-            '&access_type=offline' +
-            '&response_type=code' +
-            '&prompt=consent' +
-            '&scope=' + 'https://www.googleapis.com/auth/userinfo.email' +
-            ' https://www.googleapis.com/auth/userinfo.email';
-      
-        return `${rootUrl}?${options}`;
+    getClient() {
+        if(this.config.client) return this.config.client;
+        return null;
     }
 
-    async getTokens(code) {
+    getRedirect() {
+        if(this.config.redirect) return this.config.redirect;
+        return null;
+    }
+
+    getMainLink() {
+        if(this.config.main) return this.config.main;
+        return null;
+    }
+
+    async getToken(code) {
         const url = 'https://oauth2.googleapis.com/token';
         const values = 
             'code=' + code +
@@ -49,11 +50,16 @@ class Google {
     }
 
     verify(token) {
-        const decoded = jwt.verify(token, this.config.jwt_secret);
-        return decoded;
+        try {
+            const decoded = jwt.verify(token, this.config.jwt_secret);
+            return decoded;
+        } catch (e) {
+            return false;
+        }
+        
     }
 
-    async parseJwt(token) {
+    async parse(token) {
         try {
             let base64Payload = token.split('.')[1];
             let payload = Buffer.from(base64Payload, 'base64');
@@ -65,9 +71,14 @@ class Google {
     }
 
     checkAuth(data) {
-        if(data && data.email && data.email.includes('@nure.ua')) return true;
+        if(data 
+            && data.email 
+            && data.email_verified 
+            && data.email.includes('@nure.ua') 
+            && data.email_verified == true) return true;
+
         return false;
     }
 }
 
-module.exports = Google;
+module.exports = Auth;

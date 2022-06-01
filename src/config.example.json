@@ -2,5 +2,6 @@
     "client": "",
     "secret": "",
     "jwt_secret": "",
-    "redirect": ""
+    "redirect": "",
+    "main": ""
 }
