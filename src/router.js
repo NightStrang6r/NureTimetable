@@ -72,12 +72,17 @@ class Router {
 
         res.setHeader('content-type', 'application/json');
         let error = false;
-        if(data.length < 5000) {
-            try {
-                JSON.parse(data.toString());
-            } catch(err) {
-                error = "Invalid timetable";
+
+        if(data) {
+            if(data.length < 5000) {
+                try {
+                    JSON.parse(data.toString());
+                } catch(err) {
+                    error = "Invalid timetable";
+                }
             }
+        } else {
+            error = "Cist API failed";
         }
 
         if(error) {
@@ -90,20 +95,39 @@ class Router {
     async getGroups(req, res) {
         const data = await this.API.getGroups();
         res.setHeader('content-type', 'application/json');
+
+        if(!data) {
+            res.send(`{"error": "Cist API failed"}`);
+            return;
+        }
+
         res.send(data);
     }
 
     async getTeachers(req, res) {
         let data = await this.API.getTeachers();
+        res.setHeader('content-type', 'application/json');
+
+        if(!data) {
+            res.send(`{"error": "Cist API failed"}`);
+            return;
+        }
+
         data = data.toString('utf8');
         data = data.replace(']}]}]}', ']}]}]}]}'); // This fixes cist json encoding error
-        res.setHeader('content-type', 'application/json');
+        
         res.send(data);
     }
 
     async getAudiences(req, res) {
         const data = await this.API.getAudiences();
         res.setHeader('content-type', 'application/json');
+
+        if(!data) {
+            res.send(`{"error": "Cist API failed"}`);
+            return;
+        }
+        
         res.send(data);
     }
 
@@ -138,7 +162,7 @@ class Router {
         }
 
         // Если пользователь не авторизован, то не предоставляем доступ
-        if(!auth && req._parsedUrl.pathname != '/' && req.originalUrl != '/index.html') {
+        if(!auth && req._parsedUrl.pathname != '/' && req._parsedUrl.pathname != '/index.html') {
             res.sendStatus(401);
             return false;
         }
