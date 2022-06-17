@@ -48,6 +48,7 @@
         "edit": "Редактировать",
         "search": "Поиск...",
         "authError": "Не удалось войти. Убедитесь, что заходите с корпоративной почты @nure.ua",
+        "googleAuth": "Войти с помощью Google",
         "logout": "Выйти"
     },
     "uk": {
@@ -73,7 +74,7 @@
         "exams": "Іспити",
         "courseWorks": "Курсові роботи",
         "languageChoose": "Вибір мови",
-        "timetableUnavailable": "Неможливо завантажити розклад. Воно застаріло, або зараз немає доступу до cist.",
+        "timetableUnavailable": "Неможливо завантажити розклад. Він застарів, або зараз немає доступу до cist.",
         "today": "сьогодні",
         "month": "місяць",
         "week": "тиждень",
@@ -99,6 +100,7 @@
         "edit": "Відредагувати",
         "search": "Пошук...",
         "authError": "Не вдалось увійти. Переконайтеся, що ви заходите з корпоративної пошти @nure.ua",
+        "googleAuth": "Увійти за допомогою Google",
         "logout": "Вийти"
     },
     "en": {
@@ -150,6 +152,7 @@
         "edit": "Edit",
         "search": "Search...",
         "authError": "Failed to sign in. Make sure you log in from @nure.ua corporate mail.",
+        "googleAuth": "Sign in with Google",
         "logout": "Logout"
     }
 }

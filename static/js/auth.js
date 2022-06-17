@@ -46,6 +46,7 @@ export default class Auth {
         this.calendar.classList.add('d-none');
         this.selectEl.classList.add('d-none');
         this.menuRightEl.classList.add('d-none');
+        this.logoutButton.classList.add('d-none');
     }
 
     authError() {

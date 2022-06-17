@@ -88,9 +88,16 @@
 
         <!-- Auth -->
         <div class="auth d-none">
+            <!--<div class="logo" onclick="window.location.reload()">
+                <img class="logo-img" src="assets/logo.png" />
+                <div class="logo-text">${logoText}</div>
+            </div>
+            <div>
+                Авторизуйтесь, чтобы просматривать расписания
+            </div>-->
             <button class="button auth-button">
                 <img src="assets/google.png" />
-                &nbsp;Sign in with Google
+                &nbsp;${googleAuth}
             </button>
             <div class="name d-none">
                 <div id="l-authError">${authError}</div>
