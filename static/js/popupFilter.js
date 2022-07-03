@@ -1,7 +1,7 @@
 import Storage from './storage.js';
 import Popup from './popup.js';
 
-export default class PopupAdd extends Popup {
+export default class PopupFilter extends Popup {
     constructor(popupSelector, triggerSelector) {
         super(popupSelector, triggerSelector);
 

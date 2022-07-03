@@ -9,6 +9,10 @@ const logo = `
 
 class Logger {
     constructor() {
+
+    }
+    
+    printLogo() {
         console.log(logo);
     }
 }

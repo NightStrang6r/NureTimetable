@@ -37,7 +37,6 @@ export default class App {
             this.select.setSelected(lastTimetableId);
             this.loadTimetable(lastTimetableId);
         } else {
-            
             this.preloader.stop();
         }
 
