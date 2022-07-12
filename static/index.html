@@ -88,22 +88,31 @@
 
         <!-- Auth -->
         <div class="auth d-none">
-            <!--<div class="logo" onclick="window.location.reload()">
-                <img class="logo-img" src="assets/logo.png" />
-                <div class="logo-text">${logoText}</div>
+            <img class="logo-img-big" src="assets/logo.png" />
+            <div class="logo-text-big">${logoText}</div>
+
+            <div class="auth-text">
+                Актуальное расписание занятий ХНУРЭ для студентов и преподавателей. Авторизуйтесь при помощи аккаунта @nure.ua, чтобы просматривать расписания.
             </div>
-            <div>
-                Авторизуйтесь, чтобы просматривать расписания
-            </div>-->
+
             <button class="button auth-button">
                 <img src="assets/google.png" />
                 &nbsp;${googleAuth}
             </button>
+
             <div class="name d-none">
                 <div id="l-authError">${authError}</div>
             </div>
         </div>
         <!-- /Auth -->
+
+        <!-- First Add -->
+        <div class="addTip d-none">
+            <div class="auth-text">
+                
+            </div>
+        </div>
+        <!-- First Add -->
 
         <!-- Calendar -->
         <div id="calendar-container">

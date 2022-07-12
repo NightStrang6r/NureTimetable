@@ -3,11 +3,12 @@ import Storage from './storage.js';
 export default class Auth {
     constructor(selector) {
         this.authEl = document.querySelector(selector);
-        this.authButton = this.authEl.children[0];
+        this.authButton = document.querySelector('.auth-button');
         this.logoutButton = document.querySelector('.logout-button');
         this.selectEl = document.querySelector('.select-group');
         this.menuRightEl = document.querySelector('.menu-right');
         this.calendar = document.querySelector('#calendar-container');
+        this.logo = document.querySelector('.logo');
 
         this.authButton.addEventListener('click', (event) => this.onAuth(event));
         this.logoutButton.addEventListener('click', (event) => this.onLogout(event));
@@ -43,6 +44,7 @@ export default class Auth {
 
     setVisibilityDeauthed() {
         this.authEl.classList.remove('d-none');
+        this.logo.classList.add('d-none');
         this.calendar.classList.add('d-none');
         this.selectEl.classList.add('d-none');
         this.menuRightEl.classList.add('d-none');
