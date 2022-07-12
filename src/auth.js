@@ -3,8 +3,11 @@ const fs = require('fs');
 const jwt = require('jsonwebtoken');
 
 class Auth {
-    constructor(configPath) {
+    constructor(configPath, usersPath) {
+        this.usersPath = usersPath;
+        
         this.config = JSON.parse(fs.readFileSync(configPath));
+        this.users = JSON.parse(fs.readFileSync(usersPath));
     }
 
     getClient() {
@@ -13,7 +16,7 @@ class Auth {
     }
 
     getRedirect() {
-        if(this.config.redirect) return this.config.redirect;
+        if(this.config.main) return `${this.config.main}/auth`;
         return null;
     }
 
@@ -28,7 +31,7 @@ class Auth {
             'code=' + code +
             '&client_id=' + this.config.client +
             '&client_secret=' + this.config.secret +
-            '&redirect_uri=' + this.config.redirect +
+            '&redirect_uri=' + this.getRedirect() +
             '&grant_type=' + 'authorization_code';
 
         const options = {
@@ -75,9 +78,50 @@ class Auth {
         if(    data.email 
             && data.email_verified 
             && data.email.includes('@nure.ua') 
-            && data.email_verified == true) return true;
+            && data.email_verified == true) {
+                this.saveUser(data);
+                return true;
+            }
 
         return false;
+    }
+
+    saveUser(data) {
+        if(!data || !data.name || !data.given_name || !data.family_name || !data.email || !data.locale) return;
+
+        let user = {
+            name: data.name,
+            given_name: data.given_name,
+            family_name: data.family_name,
+            email: data.email,
+            locale: data.locale
+        };
+
+        let isExist = false;
+        for(let i = 0; i < this.users.length; i++) {
+            if(data.email == this.users[i].email) {
+                const date = new Date();
+                user.update = date.getTime();
+                user.create = this.users[i].create;
+
+                this.users.splice(i, 1);
+                this.users.push(user);
+
+                isExist = true;
+            }
+        }
+
+        if(!isExist) {
+            const date = new Date();
+            user.update = date.getTime();
+            user.create = date.getTime();
+            this.users.push(user);
+        }
+            
+
+        fs.writeFile(this.usersPath, JSON.stringify(this.users, null, 4), (err) => {
+            if(err) console.log(err);
+        });
     }
 }
 

@@ -10,7 +10,7 @@ class Router {
         this.path = this.getPath(staticPath);
         this.API = new API();
         this.locale = new Locale(this.getPath('src/locales.json'), 'uk');
-        this.auth = new Auth(this.getPath('src/config.json'));
+        this.auth = new Auth(this.getPath('src/config.json'), this.getPath('src/users.json'));
     }
 
     getPath(staticPath) {
