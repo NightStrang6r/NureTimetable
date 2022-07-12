@@ -60,6 +60,9 @@ export default class ListController {
             listItem.innerHTML = name;
             listItem.dataset.id = item.id;
 
+            if(item.full_name)
+                listItem.title = item.full_name;
+
             this.checkIfSelected(listItem);
 
             this.popupListEl.append(listItem);
