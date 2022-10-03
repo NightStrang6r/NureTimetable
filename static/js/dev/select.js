@@ -1,11 +1,10 @@
-let select, defaultSelect;
 let createOption, onSelected;
 
 export default class Select {
     constructor(selector) {
-        select = document.querySelector(selector);
-        defaultSelect = select.options[0];
-        select.addEventListener('input', this.onSelect);
+        this.select = document.querySelector(selector);
+        this.defaultSelect = this.select.options[0];
+        this.select.addEventListener('input', this.onSelect);
 
         createOption = this.createOption;
         onSelected = this.onSelected;
@@ -17,12 +16,12 @@ export default class Select {
         timetables.forEach(timetable => {
             let option = createOption(timetable.name, timetable.id, timetable.type);
             if(option == null) return;
-            select.append(option);
+            this.select.append(option);
         });
     }
 
     setSelected(id) {
-        let options = select.options;
+        let options = this.select.options;
         for(let i = 0; i < options.length; i++) {
             let option = options[i];
             if(option.dataset.id == id) {
@@ -32,8 +31,8 @@ export default class Select {
     }
 
     clearOptions() {
-        select.innerHTML = '';
-        select.append(defaultSelect);
+        this.select.innerHTML = '';
+        this.select.append(this.defaultSelect);
     }
 
     onSelect(event) {
@@ -50,12 +49,12 @@ export default class Select {
     }
 
     getFirstOption() {
-        if(!select.options[1]) return null;
+        if(!this.select.options[1]) return null;
 
         return {
-            id: select.options[1].dataset.id,
-            name: select.options[1].innerHTML,
-            type: select.options[1].dataset.type
+            id: this.select.options[1].dataset.id,
+            name: this.select.options[1].innerHTML,
+            type: this.select.options[1].dataset.type
         };
     }
 

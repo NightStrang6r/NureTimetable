@@ -17,10 +17,11 @@
         <link href='css/material.css' rel='stylesheet' />
         <link href='css/style.css' rel='stylesheet' />
         <link href='css/dark.css' rel='stylesheet' />
+        <link href='css/party.css' rel='stylesheet' />
 
         <script src='lib/jquery.min.js'></script>
         <script src='lib/main.js'></script>
-        <script src='js/script.js' type='module'></script>
+        <script src='js/index.js'></script>
     </head>
     <body>
         <!-- Header -->
@@ -88,11 +89,36 @@
 
         <!-- Auth -->
         <div class="auth d-none">
+            <!-- Confetti -->
+            <div class="confetti">
+                <div class="confetti-piece"></div>
+                <div class="confetti-piece"></div>
+                <div class="confetti-piece"></div>
+                <div class="confetti-piece"></div>
+                <div class="confetti-piece"></div>
+                <div class="confetti-piece"></div>
+                <div class="confetti-piece"></div>
+                <div class="confetti-piece"></div>
+                <div class="confetti-piece"></div>
+                <div class="confetti-piece"></div>
+                <div class="confetti-piece"></div>
+                <div class="confetti-piece"></div>
+                <div class="confetti-piece"></div>
+            </div>
+            <!-- /Confetti -->
+
             <img class="logo-img-big" src="assets/logo.png" />
-            <div class="logo-text-big">${logoText}</div>
+            <div class="logo-text-big">🎉 ${logoText} & День Кафедри ПІ 🎉</div>
 
             <div class="auth-text">
-                Актуальное расписание занятий ХНУРЭ для студентов и преподавателей. Авторизуйтесь при помощи аккаунта @nure.ua, чтобы просматривать расписания.
+                4 жовтня 2022 року кафедра ПІ відзначає <a href="https://software.nure.ua/Den-kafedry-programnoyi-inzheneriyi/" target="_blank">День Кафедри</a>!
+                <br />
+                Цього дня ми вітаємо нашу улюблену кафедру, бажаємо їй продовжувати стрімкий розвиток та ніколи не зупинятися на досягнутому 🚀
+                <br />
+                З повагою, розробники NureTimetable 🧡
+                <br />
+                <br />
+                ${mainPageDesc}
             </div>
 
             <button class="button auth-button">
@@ -108,9 +134,9 @@
 
         <!-- First Add -->
         <div class="addTip d-none">
-            <div class="auth-text">
-                
-            </div>
+            <button class="addTip-button blue">
+                <span>${addTimetable}</span>
+            </button>
         </div>
         <!-- First Add -->
 

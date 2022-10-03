@@ -2,11 +2,20 @@ import Storage from './storage.js';
 
 export default class DarkTheme {
     constructor(selector) {
-        this.trigger = document.querySelector(selector);
-        this.trigger.addEventListener('click', (event) => this.onTrigger(event));
+        this.selector = selector;
         this.storage = new Storage();
 
+        document.addEventListener('DOMContentLoaded', () => this.onDOMContentLoaded());
+
         this.onLoad();
+    }
+
+    onDOMContentLoaded() {
+        this.trigger = document.querySelector(this.selector);
+        this.trigger.addEventListener('click', (event) => this.onTrigger(event));
+        
+        let isEnabled = this.isEnabled();
+        this.setButtonImage(!isEnabled);
     }
 
     isEnabled() {
@@ -17,7 +26,6 @@ export default class DarkTheme {
 
     onLoad() {
         let isEnabled = this.isEnabled();
-        this.setButtonImage(!isEnabled);
 
         if(isEnabled) {
             this.enable();

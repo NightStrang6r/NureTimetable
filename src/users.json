@@ -1,3 +1,11 @@
 [
-    
+    {
+        "name": "Леонід Царук",
+        "given_name": "Леонід",
+        "family_name": "Царук",
+        "email": "leonid.tsaruk@nure.ua",
+        "locale": "ru",
+        "update": 1664811176335,
+        "create": 1664801943702
+    }
 ]

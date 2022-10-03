@@ -16,16 +16,19 @@ export default class App {
 
     async init() {
         this.darkTheme = new DarkTheme('.dark-trigger');
-        this.preloader = new Preloader('.preloader');
-        this.preloader.start();
     }
 
     async main() {
+        this.preloader = new Preloader('.preloader');
+        this.preloader.start();
+
         this.calendar = new Calendar('#calendar');
         this.storage = new Storage();
         this.select = new Select('.timetable-select');
         this.auth = new Auth('.auth');
         
+        this.calendarContainer = document.querySelector('#calendar-container');
+        this.addTip = document.querySelector('.addTip');
         this.reloadButton = document.querySelector('.reload-trigger');
         this.storage.setClearTrigger('.clear-button');
 
@@ -37,6 +40,14 @@ export default class App {
             this.select.setSelected(lastTimetableId);
             this.loadTimetable(lastTimetableId);
         } else {
+            if(!this.calendarContainer.className.includes('d-none')) {
+                this.calendarContainer.classList.add('d-none');
+                this.addTip.classList.remove('d-none');
+                this.addTip.addEventListener('click', () => {
+                    document.querySelector('.cd-popup-add-trigger').click()
+                });
+            }
+
             this.preloader.stop();
         }
 
@@ -54,6 +65,11 @@ export default class App {
 
     async loadTimetable(id) {
         let timetable;
+
+        if(this.auth.check()) {
+            this.calendarContainer.classList.remove('d-none');
+            this.addTip.classList.add('d-none');
+        }
 
         this.calendar.destroy();
         this.preloader.start();

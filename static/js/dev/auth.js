@@ -8,6 +8,7 @@ export default class Auth {
         this.selectEl = document.querySelector('.select-group');
         this.menuRightEl = document.querySelector('.menu-right');
         this.calendar = document.querySelector('#calendar-container');
+        this.addTip = document.querySelector('.addTip');
         this.logo = document.querySelector('.logo');
 
         this.authButton.addEventListener('click', (event) => this.onAuth(event));
@@ -49,6 +50,7 @@ export default class Auth {
         this.selectEl.classList.add('d-none');
         this.menuRightEl.classList.add('d-none');
         this.logoutButton.classList.add('d-none');
+        this.addTip.classList.add('d-none');
     }
 
     authError() {
