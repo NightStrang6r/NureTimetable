@@ -11,7 +11,7 @@ export default class PopupFilter extends Popup {
 
         this.popupSaveEl.addEventListener('click', (event) => this.save(event));
 
-        this.storage = new Storage();
+        this.storage = window.storage;
     }
 
     async open(event) {

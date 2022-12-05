@@ -1,9 +1,7 @@
-import Storage from './storage.js';
-
 export default class DarkTheme {
     constructor(selector) {
         this.selector = selector;
-        this.storage = new Storage();
+        this.storage = window.storage;
 
         document.addEventListener('DOMContentLoaded', () => this.onDOMContentLoaded());
 
@@ -58,17 +56,28 @@ export default class DarkTheme {
         }
     }
 
-    enable() {
-        let dark = document.createElement('link');
-        dark.rel = 'stylesheet';
-        dark.href = 'css/dark.css';
-        dark.class = 'moveable';
+    async enable() {
+        let dark = document.createElement('style');
+        let css = await this.getDarkCSS();
+        dark.innerHTML = css;
+        dark.id = 'darkCSS';
         document.head.append(dark);
     }
 
     disable() {
-        let dark = document.querySelectorAll('link[href="css/dark.css"]');
-        if(dark == null) return;
-        dark.forEach(el => el.remove());
+        let darkStyle = document.querySelectorAll('#darkCSS');
+        let darkLink = document.querySelector('link[href="css/dark.css"]');
+        if(darkLink != null) darkLink.remove();
+        if(darkStyle != null) darkStyle.forEach(el => el.remove());
+    }
+
+    async getDarkCSS() {
+        let css = this.storage.getDarkCSS();
+        if(css != null) return css;
+
+        let res = await fetch('css/dark.css');
+        css = await res.text();
+        this.storage.saveDarkCSS(css);
+        return css;
     }
 }

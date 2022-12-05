@@ -47,7 +47,7 @@ export default class Calendar {
         }
     
         this.calendar = new FullCalendar.Calendar(calendarEl, options);
-        this.storage = new Storage();
+        this.storage = window.storage;
         this.popupAdd = new PopupEventAdd('.cd-popup-event-add', this);
         this.popupView = new PopupEventView('.cd-popup-event-view', this);
     }

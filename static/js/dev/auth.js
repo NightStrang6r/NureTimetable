@@ -14,10 +14,12 @@ export default class Auth {
         this.authButton.addEventListener('click', (event) => this.onAuth(event));
         this.logoutButton.addEventListener('click', (event) => this.onLogout(event));
 
-        this.storage = new Storage();
+        this.storage = window.storage;
 
         if(!this.check()) {
-            this.setVisibilityDeauthed();
+            this.setVisibility('deauthed');
+        } else {
+            this.setVisibility('authed');
         }
 
         if(this.authError()) {
@@ -43,14 +45,17 @@ export default class Auth {
         window.location.reload();
     }
 
-    setVisibilityDeauthed() {
-        this.authEl.classList.remove('d-none');
-        this.logo.classList.add('d-none');
-        this.calendar.classList.add('d-none');
-        this.selectEl.classList.add('d-none');
-        this.menuRightEl.classList.add('d-none');
-        this.logoutButton.classList.add('d-none');
-        this.addTip.classList.add('d-none');
+    setVisibility(visibility) {
+        if(visibility == 'deauthed') {
+            this.authEl.classList.remove('d-none');
+            this.logo.classList.add('d-none');
+            this.calendar.classList.add('d-none');
+            this.selectEl.classList.add('d-none');
+            this.menuRightEl.classList.add('d-none');
+            this.logoutButton.classList.add('d-none');
+            this.addTip.classList.add('d-none');
+            return;
+        }
     }
 
     authError() {

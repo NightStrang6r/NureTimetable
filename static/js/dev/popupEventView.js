@@ -17,7 +17,7 @@ export default class PopupEventView extends Popup {
 
         this.pageCalendar = calendar;
         this.calendar = calendar.calendar;
-        this.storage = new Storage();
+        this.storage = window.storage;
     }
 
     setupListeners() {

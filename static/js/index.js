@@ -240,6 +240,14 @@
         return false;
       return null;
     }
+    saveDarkCSS(css) {
+      localStorage.darkCSS = css;
+    }
+    getDarkCSS() {
+      if (localStorage.darkCSS)
+        return localStorage.darkCSS;
+      return null;
+    }
     saveCustomEvents(events) {
       let updatedEvents = [];
       events.forEach((event) => {
@@ -502,7 +510,7 @@
       this.popupSaveEl.addEventListener("click", (event) => this.save(event));
       this.pageCalendar = calendar;
       this.calendar = calendar.calendar;
-      this.storage = new Storage();
+      this.storage = window.storage;
     }
     setupListeners() {
       this.popupEl.classList.remove("d-none");
@@ -649,7 +657,7 @@
       this.popupEditEl.addEventListener("click", (event) => this.edit(event));
       this.pageCalendar = calendar;
       this.calendar = calendar.calendar;
-      this.storage = new Storage();
+      this.storage = window.storage;
     }
     setupListeners() {
       this.popupEl.classList.remove("d-none");
@@ -750,7 +758,7 @@
         eventChange: (event) => this.onEventChange(event)
       };
       this.calendar = new FullCalendar.Calendar(calendarEl, options);
-      this.storage = new Storage();
+      this.storage = window.storage;
       this.popupAdd = new PopupEventAdd(".cd-popup-event-add", this);
       this.popupView = new PopupEventView(".cd-popup-event-view", this);
     }
@@ -1027,7 +1035,7 @@ ${this.locale.time}: ${start} - ${end}`);
       this.popupSaveEl.addEventListener("click", (event) => this.save(event));
       this.popupTabHeaderEl.addEventListener("click", (event) => this.onTabClick(event));
       this.searchInputEl.addEventListener("input", (event) => this.onInput(event));
-      this.storage = new Storage();
+      this.storage = window.storage;
       this.listController = new ListController(this.popupListEl, this.storage);
     }
     async open(event) {
@@ -1105,7 +1113,7 @@ ${this.locale.time}: ${start} - ${end}`);
   var DarkTheme = class {
     constructor(selector) {
       this.selector = selector;
-      this.storage = new Storage();
+      this.storage = window.storage;
       document.addEventListener("DOMContentLoaded", () => this.onDOMContentLoaded());
       this.onLoad();
     }
@@ -1148,18 +1156,29 @@ ${this.locale.time}: ${start} - ${end}`);
         img.src = "assets/moon.png";
       }
     }
-    enable() {
-      let dark = document.createElement("link");
-      dark.rel = "stylesheet";
-      dark.href = "css/dark.css";
-      dark.class = "moveable";
+    async enable() {
+      let dark = document.createElement("style");
+      let css = await this.getDarkCSS();
+      dark.innerHTML = css;
+      dark.id = "darkCSS";
       document.head.append(dark);
     }
     disable() {
-      let dark = document.querySelectorAll('link[href="css/dark.css"]');
-      if (dark == null)
-        return;
-      dark.forEach((el) => el.remove());
+      let darkStyle = document.querySelectorAll("#darkCSS");
+      let darkLink = document.querySelector('link[href="css/dark.css"]');
+      if (darkLink != null)
+        darkLink.remove();
+      if (darkStyle != null)
+        darkStyle.forEach((el) => el.remove());
+    }
+    async getDarkCSS() {
+      let css = this.storage.getDarkCSS();
+      if (css != null)
+        return css;
+      let res = await fetch("css/dark.css");
+      css = await res.text();
+      this.storage.saveDarkCSS(css);
+      return css;
     }
   };
 
@@ -1171,7 +1190,7 @@ ${this.locale.time}: ${start} - ${end}`);
       this.checkboxEl = document.querySelector(".checkbox");
       this.popupSaveEl = document.querySelector(".popup-filter-save");
       this.popupSaveEl.addEventListener("click", (event) => this.save(event));
-      this.storage = new Storage();
+      this.storage = window.storage;
     }
     async open(event) {
       super.open(event);
@@ -1244,7 +1263,7 @@ ${this.locale.time}: ${start} - ${end}`);
       this.select = document.querySelector(".language-select");
       this.popupSaveEl = document.querySelector(".popup-language-save");
       this.popupSaveEl.addEventListener("click", (event) => this.save(event));
-      this.storage = new Storage();
+      this.storage = window.storage;
     }
     open(event) {
       super.open(event);
@@ -1271,9 +1290,11 @@ ${this.locale.time}: ${start} - ${end}`);
       this.logo = document.querySelector(".logo");
       this.authButton.addEventListener("click", (event) => this.onAuth(event));
       this.logoutButton.addEventListener("click", (event) => this.onLogout(event));
-      this.storage = new Storage();
+      this.storage = window.storage;
       if (!this.check()) {
-        this.setVisibilityDeauthed();
+        this.setVisibility("deauthed");
+      } else {
+        this.setVisibility("authed");
       }
       if (this.authError()) {
         history.pushState(null, null, "/");
@@ -1296,14 +1317,17 @@ ${this.locale.time}: ${start} - ${end}`);
       this.storage.deleteAuth();
       window.location.reload();
     }
-    setVisibilityDeauthed() {
-      this.authEl.classList.remove("d-none");
-      this.logo.classList.add("d-none");
-      this.calendar.classList.add("d-none");
-      this.selectEl.classList.add("d-none");
-      this.menuRightEl.classList.add("d-none");
-      this.logoutButton.classList.add("d-none");
-      this.addTip.classList.add("d-none");
+    setVisibility(visibility) {
+      if (visibility == "deauthed") {
+        this.authEl.classList.remove("d-none");
+        this.logo.classList.add("d-none");
+        this.calendar.classList.add("d-none");
+        this.selectEl.classList.add("d-none");
+        this.menuRightEl.classList.add("d-none");
+        this.logoutButton.classList.add("d-none");
+        this.addTip.classList.add("d-none");
+        return;
+      }
     }
     authError() {
       const search = window.location.search;
@@ -1328,13 +1352,14 @@ ${this.locale.time}: ${start} - ${end}`);
       this.init();
     }
     async init() {
+      window.storage = new Storage();
+      this.storage = window.storage;
       this.darkTheme = new DarkTheme(".dark-trigger");
     }
     async main() {
       this.preloader = new Preloader(".preloader");
       this.preloader.start();
       this.calendar = new Calendar("#calendar");
-      this.storage = new Storage();
       this.select = new Select(".timetable-select");
       this.auth = new Auth(".auth");
       this.calendarContainer = document.querySelector("#calendar-container");

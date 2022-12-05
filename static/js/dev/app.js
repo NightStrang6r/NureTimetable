@@ -15,6 +15,8 @@ export default class App {
     }
 
     async init() {
+        window.storage = new Storage();
+        this.storage = window.storage;
         this.darkTheme = new DarkTheme('.dark-trigger');
     }
 
@@ -23,7 +25,6 @@ export default class App {
         this.preloader.start();
 
         this.calendar = new Calendar('#calendar');
-        this.storage = new Storage();
         this.select = new Select('.timetable-select');
         this.auth = new Auth('.auth');
         

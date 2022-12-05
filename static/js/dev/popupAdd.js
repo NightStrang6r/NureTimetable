@@ -15,7 +15,7 @@ export default class PopupAdd extends Popup {
         this.popupTabHeaderEl.addEventListener('click', (event) => this.onTabClick(event));
         this.searchInputEl.addEventListener('input', (event) => this.onInput(event));
 
-        this.storage = new Storage();
+        this.storage = window.storage;
         this.listController = new ListController(this.popupListEl, this.storage);
     }
 

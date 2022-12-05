@@ -9,7 +9,7 @@ class Router {
     constructor(staticPath) {
         this.path = this.getPath(staticPath);
         this.API = new API();
-        this.locale = new Locale(this.getPath('src/locales.json'), 'uk');
+        this.locale = new Locale(`${this.path}/index.html`, this.getPath('src/locales.json'), `${this.path}/indexes`, 'uk');
         this.auth = new Auth(this.getPath('src/config.json'), this.getPath('src/users.json'));
     }
 
@@ -34,7 +34,8 @@ class Router {
             res.cookie('lang', lang);
         }
 
-        let index = await this.locale.translate(`${this.path}/index.html`, lang);
+        let index = await this.locale.getIndex(lang);
+        res.setHeader('content-type', 'text/html');
         res.send(index);
     }
 

@@ -75,6 +75,15 @@ export default class Storage {
         return null;
     }
 
+    saveDarkCSS(css) {
+        localStorage.darkCSS = css;
+    }
+
+    getDarkCSS() {
+        if(localStorage.darkCSS) return localStorage.darkCSS;
+        return null;
+    }
+
     saveCustomEvents(events) {
         let updatedEvents = [];
 

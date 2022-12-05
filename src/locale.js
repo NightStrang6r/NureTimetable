@@ -1,33 +1,39 @@
 const fs = require('fs');
 const fsa = require('fs').promises;
-const path = require('path');
 
 class Localization {
-    constructor(localesPath, defaultLang) {
-        this.locales = fs.readFileSync(localesPath, "utf8");
+    constructor(indexPath, localesPath, pagesFolder, defaultLang) {
+        this.indexPath = indexPath;
+        this.index = fs.readFileSync(this.indexPath, 'utf8');
+        this.index = this.index.toString('utf8');
+
+        this.locales = fs.readFileSync(localesPath, 'utf8');
         this.locales = JSON.parse(this.locales);
+
+        this.pagesFolder = pagesFolder;
         this.default = defaultLang;
+
+        this.preparePages();
     }
 
-    async translate(path, lang) {
-        let file = await fsa.readFile(path);
-        file = file.toString('utf8');
-
-        if(!this.checkLang(lang)) lang = this.default;
-
+    preparePages() {
         for(let locale in this.locales) {
-            if(locale == lang) {
-                locale = this.locales[locale];
+            let langCode = locale;
+            locale = this.locales[langCode];
+            let translation = this.index;
 
-                for(let word in locale) {
-                    let replacement = '\\${' + word + '}';
-                    file = this.replaceAll(file, replacement, locale[word]);
-                }
-                break;
+            for(let word in locale) {
+                let replacement = '\\${' + word + '}';
+                translation = this.replaceAll(translation, replacement, locale[word]);
             }
-        }
 
-        return file;
+            fs.writeFileSync(`${this.pagesFolder}/index_${langCode}.html`, translation);
+        }
+    }
+
+    async getIndex(lang) {
+        if(!this.checkLang(lang)) lang = this.default;
+        return await fsa.readFile(`${this.pagesFolder}/index_${lang}.html`);
     }
 
     checkLang(lang) {

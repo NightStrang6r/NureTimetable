@@ -10,7 +10,7 @@ export default class PopupLanguage extends Popup {
 
         this.popupSaveEl.addEventListener('click', (event) => this.save(event));
         
-        this.storage = new Storage();
+        this.storage = window.storage;
     }
 
     open(event) {
