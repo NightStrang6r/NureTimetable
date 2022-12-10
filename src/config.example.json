@@ -2,5 +2,12 @@
     "client": "",
     "secret": "",
     "jwt_secret": "",
-    "main": ""
+    "main": "",
+    "db": {
+        "host": "",
+        "port": 3306,
+        "user": "",
+        "pass": "",
+        "db":   ""
+    }
 }

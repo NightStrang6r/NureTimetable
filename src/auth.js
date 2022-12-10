@@ -1,13 +1,9 @@
 const fetch = require('node-fetch');
-const fs = require('fs');
 const jwt = require('jsonwebtoken');
 
 class Auth {
-    constructor(configPath, usersPath) {
-        this.usersPath = usersPath;
-        
-        this.config = JSON.parse(fs.readFileSync(configPath));
-        this.users = JSON.parse(fs.readFileSync(usersPath));
+    constructor() {
+        this.config = global.storage.config;
     }
 
     getClient() {
@@ -87,41 +83,21 @@ class Auth {
     }
 
     saveUser(data) {
-        if(!data || !data.name || !data.given_name || !data.family_name || !data.email || !data.locale) return;
+        if(data.email && !data.name) {
+            global.db.updateUserLastActive(data.email);
+            return;
+        }
+
+        if(!data.name || !data.given_name || !data.family_name || !data.locale) return;
 
         let user = {
-            name: data.name,
-            given_name: data.given_name,
-            family_name: data.family_name,
-            email: data.email,
-            locale: data.locale
+            nickname: data.name,
+            name: data.given_name,
+            surname: data.family_name,
+            email: data.email
         };
 
-        let isExist = false;
-        for(let i = 0; i < this.users.length; i++) {
-            if(data.email == this.users[i].email) {
-                const date = new Date();
-                user.update = date.getTime();
-                user.create = this.users[i].create;
-
-                this.users.splice(i, 1);
-                this.users.push(user);
-
-                isExist = true;
-            }
-        }
-
-        if(!isExist) {
-            const date = new Date();
-            user.update = date.getTime();
-            user.create = date.getTime();
-            this.users.push(user);
-        }
-            
-
-        fs.writeFile(this.usersPath, JSON.stringify(this.users, null, 4), (err) => {
-            if(err) console.log(err);
-        });
+        global.db.createOrUpdateUser(user);
     }
 }
 

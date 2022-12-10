@@ -753,6 +753,7 @@
           meridiem: "short"
         },
         unselectCancel: ".cd-popup-container",
+        schedulerLicenseKey: "CC-Attribution-NonCommercial-NoDerivatives",
         select: (event) => this.onSelect(event),
         eventClick: (event) => this.onEventClick(event),
         eventChange: (event) => this.onEventChange(event)

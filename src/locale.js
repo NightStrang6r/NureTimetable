@@ -1,14 +1,7 @@
-const fs = require('fs');
-const fsa = require('fs').promises;
-
 class Localization {
-    constructor(indexPath, localesPath, pagesFolder, defaultLang) {
-        this.indexPath = indexPath;
-        this.index = fs.readFileSync(this.indexPath, 'utf8');
-        this.index = this.index.toString('utf8');
-
-        this.locales = fs.readFileSync(localesPath, 'utf8');
-        this.locales = JSON.parse(this.locales);
+    constructor(pagesFolder, defaultLang) {
+        this.index = global.storage.getIndex();
+        this.locales = global.storage.getLocales();
 
         this.pagesFolder = pagesFolder;
         this.default = defaultLang;
@@ -27,13 +20,13 @@ class Localization {
                 translation = this.replaceAll(translation, replacement, locale[word]);
             }
 
-            fs.writeFileSync(`${this.pagesFolder}/index_${langCode}.html`, translation);
+            global.storage.saveLocales(langCode, translation);
         }
     }
 
     async getIndex(lang) {
         if(!this.checkLang(lang)) lang = this.default;
-        return await fsa.readFile(`${this.pagesFolder}/index_${lang}.html`);
+        return await global.storage.getTranslatedIndex(lang);
     }
 
     checkLang(lang) {

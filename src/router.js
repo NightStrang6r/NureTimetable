@@ -1,26 +1,15 @@
 const express = require('express');
-const path = require('path');
-const fs = require('fs');
 const API = require('./API.js');
 const Locale = require('./locale.js');
 const Auth = require('./auth.js');
+const Timetable = require('./timetable.js');
 
 class Router {
-    constructor(staticPath) {
-        this.path = this.getPath(staticPath);
+    constructor() {
         this.API = new API();
-        this.locale = new Locale(`${this.path}/index.html`, this.getPath('src/locales.json'), `${this.path}/indexes`, 'uk');
-        this.auth = new Auth(this.getPath('src/config.json'), this.getPath('src/users.json'));
-    }
-
-    getPath(staticPath) {
-        if(fs.existsSync(staticPath)) {
-            return path.resolve(staticPath);
-        } else if(fs.existsSync(`../${staticPath}`)) {
-            return path.resolve(`../${staticPath}`);
-        } else {
-            throw new Error('No path found!');
-        }
+        this.locale = new Locale(global.storage.indexesPath, 'uk');
+        this.auth = new Auth();
+        this.timetable = new Timetable();
     }
 
     async onIndex(req, res) {
@@ -40,7 +29,7 @@ class Router {
     }
 
     static() {
-        return express.static(this.path);
+        return express.static(global.storage.staticPath);
     }
 
     async getTimetable(req, res) {
@@ -73,14 +62,13 @@ class Router {
 
         res.setHeader('content-type', 'application/json');
         let error = false;
+        let parsed = null;
 
         if(data) {
-            if(data.length < 5000) {
-                try {
-                    JSON.parse(data.toString());
-                } catch(err) {
-                    error = "Invalid timetable";
-                }
+            try {
+                parsed = JSON.parse(data.toString());
+            } catch(err) {
+                error = "Invalid timetable";
             }
         } else {
             error = "Cist API failed";
@@ -89,6 +77,11 @@ class Router {
         if(error) {
             res.send(`{"error": "${error}"}`);
         } else {
+            let timetableName = this.timetable.getTimetableName(id, typeId, parsed);
+            global.db.createOrUpdateTimetable(id, typeId, timetableName, parsed);
+
+
+
             res.send(data);
         }
     }
@@ -101,6 +94,15 @@ class Router {
             res.send(`{"error": "Cist API failed"}`);
             return;
         }
+
+        let parsed = JSON.parse(data.toString());
+        let groups = [];
+        parsed.university.faculties.forEach(faculty => {
+            faculty.directions.forEach(direction => {
+                groups = groups.concat(direction.groups);
+            })
+        });
+        //global.db.createOrUpdateGroups(groups);
 
         res.send(data);
     }
@@ -137,7 +139,7 @@ class Router {
         res.status(200);
 
         if(req.cookies && req.cookies.dark == 'true') {
-            res.sendFile(`${this.path}/css/dark.css`);
+            res.sendFile(`${global.storage.staticPath}/css/dark.css`);
         } else {
             res.send('');
         }

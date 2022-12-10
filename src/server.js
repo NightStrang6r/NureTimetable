@@ -9,7 +9,7 @@ class Server {
     }
     
     run() {
-        const router = new Router('static');
+        const router = new Router();
 
         this.server.use(cookieParser());
 

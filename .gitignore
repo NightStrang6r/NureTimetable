@@ -2,5 +2,5 @@ node_modules
 indev
 config.json
 users.json
-indexes/*
+static/indexes/*
 build
