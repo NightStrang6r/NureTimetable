@@ -909,3 +909,23 @@ input[type=checkbox]:checked ~ .sidebarIconToggle > .diagonal.part-2 {
 #preloader-img {
     max-width: 500px;
 }
+
+/* PRINT */
+
+@media print {
+    header, .fc-button-group, .fc-today-button {
+        display: none !important;
+    }
+
+    #calendar-container {
+        position: absolute !important;
+        bottom: 0 !important;
+        left: 0 !important;
+        right: 0 !important;
+        top: 0 !important;
+    }
+
+    #calendar {
+        height: 100% !important;
+    }
+}

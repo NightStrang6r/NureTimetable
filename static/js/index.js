@@ -109,6 +109,48 @@
     }
   };
 
+  // static/js/dev/popup.js
+  var Popup = class {
+    constructor(popupSelector, triggerSelector) {
+      this.popupEl = document.querySelector(popupSelector);
+      if (triggerSelector != null)
+        this.popupTriggerEl = document.querySelector(triggerSelector);
+      this.setupListeners();
+    }
+    setupListeners() {
+      this.popupEl.classList.remove("d-none");
+      this.popupTriggerEl.addEventListener("click", (event) => this.open(event));
+      this.popupEl.addEventListener("click", (event) => this.closeEvent(event));
+      document.addEventListener("keyup", (event) => this.closeEvent(event));
+    }
+    open(event) {
+      event.preventDefault();
+      this.popupEl.classList.add("is-visible");
+    }
+    close() {
+      this.popupEl.classList.remove("is-visible");
+    }
+    closeEvent(event) {
+      if ($(event.target).is(".cd-popup-close") || $(event.target).is(".cd-popup")) {
+        event.preventDefault();
+        this.close();
+      }
+      if (event.which == "27") {
+        this.close();
+      }
+    }
+    addOpenSelect(selector, selectId) {
+      let select = document.querySelector(selector);
+      if (select == null)
+        return;
+      select.addEventListener("input", (event) => {
+        if (select.selectedIndex != selectId)
+          return;
+        this.open(event);
+      });
+    }
+  };
+
   // static/js/dev/API.js
   var API = class {
     async getTimetable(id, type) {
@@ -430,48 +472,6 @@
     }
   };
 
-  // static/js/dev/popup.js
-  var Popup = class {
-    constructor(popupSelector, triggerSelector) {
-      this.popupEl = document.querySelector(popupSelector);
-      if (triggerSelector != null)
-        this.popupTriggerEl = document.querySelector(triggerSelector);
-      this.setupListeners();
-    }
-    setupListeners() {
-      this.popupEl.classList.remove("d-none");
-      this.popupTriggerEl.addEventListener("click", (event) => this.open(event));
-      this.popupEl.addEventListener("click", (event) => this.closeEvent(event));
-      document.addEventListener("keyup", (event) => this.closeEvent(event));
-    }
-    open(event) {
-      event.preventDefault();
-      this.popupEl.classList.add("is-visible");
-    }
-    close() {
-      this.popupEl.classList.remove("is-visible");
-    }
-    closeEvent(event) {
-      if ($(event.target).is(".cd-popup-close") || $(event.target).is(".cd-popup")) {
-        event.preventDefault();
-        this.close();
-      }
-      if (event.which == "27") {
-        this.close();
-      }
-    }
-    addOpenSelect(selector, selectId) {
-      let select = document.querySelector(selector);
-      if (select == null)
-        return;
-      select.addEventListener("input", (event) => {
-        if (select.selectedIndex != selectId)
-          return;
-        this.open(event);
-      });
-    }
-  };
-
   // static/js/dev/popupEventAdd.js
   var PopupEventAdd = class extends Popup {
     constructor(popupSelector, calendar) {
@@ -694,7 +694,7 @@
   // static/js/dev/calendar.js
   var Calendar = class {
     constructor(selector) {
-      const calendarEl = document.querySelector(selector);
+      this.calendarEl = document.querySelector(selector);
       this.loadLocalization();
       const options = {
         headerToolbar: {
@@ -733,10 +733,11 @@
         eventClick: (event) => this.onEventClick(event),
         eventChange: (event) => this.onEventChange(event)
       };
-      this.calendar = new FullCalendar.Calendar(calendarEl, options);
+      this.calendar = new FullCalendar.Calendar(this.calendarEl, options);
       this.storage = window.storage;
       this.popupAdd = new PopupEventAdd(".cd-popup-event-add", this);
       this.popupView = new PopupEventView(".cd-popup-event-view", this);
+      document.addEventListener("click", () => this.onCalendarElClick());
     }
     render() {
       this.calendar.render();
@@ -817,6 +818,7 @@
       }
     }
     onFixedEvent(info) {
+      console.log(this.calendar);
       let parser = new Parser(this.timetable);
       console.log("Calendar: Fixed event click:");
       console.log(info);
@@ -847,17 +849,50 @@ ${this.locale.dayUpper}: ${day}
 ${this.locale.time}: ${start} - ${end}`);
     }
     onCustomEvent(info) {
-      console.log("Calendar: Custom event click:");
-      console.log(info);
       this.popupView.open(info);
     }
     onSelect(info) {
-      console.log("Calendar: Area selected:");
-      console.log(info);
       this.popupAdd.open(info);
     }
     onEventChange(info) {
       this.storage.updateCustomEvent(info.event, info.oldEvent);
+    }
+    onCalendarElClick() {
+      let parser = new Parser(this.timetable);
+      if (this.calendar.currentData.currentViewType == "timeGridDay") {
+        console.log("Added");
+        this.calendar.getEvents().forEach((event) => {
+          if (event.start.toDateString() != new Date().toDateString())
+            return;
+          let properties = event.extendedProps;
+          if (properties.fullDataView == "true")
+            return;
+          let groups = "";
+          let teachers = "";
+          properties.teachers.forEach((id) => {
+            teachers += `${parser.getTeacherById(id).full_name} `;
+          });
+          properties.groups.forEach((id) => {
+            groups += `${parser.getGroupById(id).name} `;
+          });
+          let lessonsCount = parser.countLessons(properties.subject.id, properties.type.id, properties.teachers);
+          let currentLesson = parser.countCurrentLesson(properties.subject.id, properties.type.id, properties.start, properties.end);
+          let title = `${event.title}
+${teachers}
+${groups}
+${currentLesson}/${lessonsCount}`;
+          event.setProp("title", title);
+          event.setExtendedProp("fullDataView", "true");
+        });
+      } else {
+        console.log("Cleared");
+        this.calendar.getEvents().forEach((event) => {
+          if (event.extendedProps.fullDataView != "true")
+            return;
+          event.setProp("title", `${event.extendedProps.subject.brief} ${event.extendedProps.type.short_name} ${event.extendedProps.auditory}`);
+          event.setExtendedProp("fullDataView", "false");
+        });
+      }
     }
   };
 
@@ -1341,6 +1376,7 @@ ${this.locale.time}: ${start} - ${end}`);
       this.calendarContainer = document.querySelector("#calendar-container");
       this.addTip = document.querySelector(".addTip");
       this.reloadButton = document.querySelector(".reload-trigger");
+      this.printButton = document.querySelector(".print-trigger");
       this.storage.setClearTrigger(".clear-button");
       let timetables = this.storage.getTimetables();
       let lastTimetableId = this.storage.getSelected();
@@ -1362,6 +1398,7 @@ ${this.locale.time}: ${start} - ${end}`);
       this.storage.onTimetablesSaved((prop) => this.onTimetablesSavedCallback(prop));
       this.storage.onFiltersSaved((prop) => this.onFiltersSavedCallback(prop));
       this.reloadButton.addEventListener("click", (prop) => this.onReloadButton(prop));
+      this.printButton.addEventListener("click", (prop) => this.onPrintButton(prop));
       this.popupAdd = new PopupAdd(".cd-popup-add", ".cd-popup-add-trigger");
       new PopupFilter(".cd-popup-filter", ".cd-popup-filter-trigger");
       new PopupLanguage(".cd-popup-language", ".cd-popup-language-trigger");
@@ -1414,6 +1451,9 @@ ${this.locale.time}: ${start} - ${end}`);
         return;
       this.storage.deleteCacheById(selected);
       this.loadTimetable(selected);
+    }
+    onPrintButton() {
+      window.print();
     }
   };
 

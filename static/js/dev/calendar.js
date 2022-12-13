@@ -1,11 +1,10 @@
 import Parser from './parser.js';
-import Storage from './storage.js';
 import PopupEventAdd from './popupEventAdd.js';
 import PopupEventView from './popupEventView.js';
 
 export default class Calendar {
     constructor(selector) {
-        const calendarEl = document.querySelector(selector);
+        this.calendarEl = document.querySelector(selector);
 
         this.loadLocalization();
 
@@ -47,10 +46,12 @@ export default class Calendar {
             eventChange: (event) => this.onEventChange(event)
         }
     
-        this.calendar = new FullCalendar.Calendar(calendarEl, options);
+        this.calendar = new FullCalendar.Calendar(this.calendarEl, options);
         this.storage = window.storage;
         this.popupAdd = new PopupEventAdd('.cd-popup-event-add', this);
         this.popupView = new PopupEventView('.cd-popup-event-view', this);
+
+        document.addEventListener('click', () => this.onCalendarElClick());
     }
 
     render() {
@@ -145,6 +146,7 @@ export default class Calendar {
     }
 
     onFixedEvent(info) {
+        console.log(this.calendar);
         let parser = new Parser(this.timetable);
 
         console.log('Calendar: Fixed event click:');
@@ -174,18 +176,60 @@ export default class Calendar {
     }
 
     onCustomEvent(info) {
-        console.log('Calendar: Custom event click:');
-        console.log(info);
+        //console.log('Calendar: Custom event click:');
+        //console.log(info);
         this.popupView.open(info);
     }
 
     onSelect(info) {
-        console.log('Calendar: Area selected:');
-        console.log(info);
+        //console.log('Calendar: Area selected:');
+        //console.log(info);
         this.popupAdd.open(info);
     }
 
     onEventChange(info) {
         this.storage.updateCustomEvent(info.event, info.oldEvent);
+    }
+
+    onCalendarElClick() {
+        let parser = new Parser(this.timetable);
+
+        if(this.calendar.currentData.currentViewType == "timeGridDay") {
+            console.log('Added')
+            this.calendar.getEvents().forEach((event) => {
+                if(event.start.toDateString() != new Date().toDateString()) return;
+                
+                let properties = event.extendedProps;
+    
+                if(properties.fullDataView == 'true') return;
+    
+                let groups = '';
+                let teachers = '';
+    
+                properties.teachers.forEach(id => {
+                    teachers += `${parser.getTeacherById(id).full_name} `;
+                });
+    
+                properties.groups.forEach(id => {
+                    groups += `${parser.getGroupById(id).name} `;
+                });
+    
+                let lessonsCount = parser.countLessons(properties.subject.id, properties.type.id, properties.teachers);
+                let currentLesson = parser.countCurrentLesson(properties.subject.id, properties.type.id, properties.start, properties.end);
+    
+                let title = `${event.title}\n${teachers}\n${groups}\n${currentLesson}/${lessonsCount}`;
+    
+                event.setProp('title', title);
+                event.setExtendedProp('fullDataView', 'true');
+            });
+        } else {
+            console.log('Cleared')
+            this.calendar.getEvents().forEach((event) => {
+                if(event.extendedProps.fullDataView != 'true') return;
+
+                event.setProp('title', `${event.extendedProps.subject.brief} ${event.extendedProps.type.short_name} ${event.extendedProps.auditory}`);
+                event.setExtendedProp('fullDataView', 'false');
+            });
+        }
     }
 }

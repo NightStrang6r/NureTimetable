@@ -263,6 +263,9 @@ class DB {
                 };
 
                 await this.knex('events').insert(newEvent);
+
+                await this.createOrUpdateEventsTeachers(newEvent.event_id, event.teachers);
+                await this.createOrUpdateEventsGroups(newEvent.event_id, event.groups);
             }
         } catch (err) {
             console.log(err);
@@ -272,7 +275,7 @@ class DB {
 
     async getEvents(timetable_id) {
         try {
-            const result = await this.knex('events').select('start_time', 'end_time', 'pair_number as number_pair', 'subject_id', 'event_type_id', 'audience_id').where('timetable_id', timetable_id);
+            const result = await this.knex('events').select('event_id', 'start_time', 'end_time', 'pair_number as number_pair', 'subject_id', 'event_type_id', 'audience_id').where('timetable_id', timetable_id);
             let newEvents = [];
 
             for(let i = 0; i < result.length; i++) {
@@ -285,8 +288,8 @@ class DB {
                 newEvent.subject_id = await this.getCistIdBySubjectId(event.subject_id);
                 newEvent.type = await this.getCistIdByEventTypeId(event.event_type_id);
                 newEvent.auditory = await this.getNameByAudienceId(event.audience_id);
-                newEvent.teachers = [];
-                newEvent.groups = [];
+                newEvent.teachers = await this.getTeachersByEventId(event.event_id);
+                newEvent.groups = await this.getGroupsByEventId(event.event_id);
 
                 newEvents.push(newEvent);
             }
@@ -369,6 +372,94 @@ class DB {
         }
     }
 
+    async createOrUpdateEventsTeachers(event_id, cist_ids) {
+        try {
+            await this.knex('events_teachers').where('event_id', event_id).del();
+
+            for(let i = 0; i < cist_ids.length; i++) {
+                let cist_id = cist_ids[i];
+                if(!cist_id) continue;
+
+                let teacher_id = await this.getTeacherIdByCistId(cist_id);
+                if(!teacher_id) continue;
+
+                let newEventTeacher = {
+                    event_id: event_id,
+                    teacher_id: teacher_id
+                };
+
+                await this.knex('events_teachers').insert(newEventTeacher);
+            }
+        } catch (err) {
+            console.log(err);
+            return false;
+        }
+    }
+
+    async getTeachersByEventId(event_id) {
+        try {
+            const result = await this.knex('events_teachers').select('teacher_id').where('event_id', event_id);
+            let cist_ids = [];
+
+            for(let i = 0; i < result.length; i++) {
+                let teacher_id = result[i].teacher_id;
+                let cist_id = await this.getCistIdByTeacherId(teacher_id);
+                if(!cist_id) continue;
+
+                cist_ids.push(cist_id);
+            }
+
+            return cist_ids;
+        } catch (err) {
+            console.log(err);
+            return false;
+        }
+    }
+
+    async createOrUpdateEventsGroups(event_id, cist_ids) {
+        try {
+            await this.knex('events_groups').where('event_id', event_id).del();
+
+            for(let i = 0; i < cist_ids.length; i++) {
+                let cist_id = cist_ids[i];
+                if(!cist_id) continue;
+
+                let group_id = await this.getGroupIdByCistId(cist_id);
+                if(!group_id) continue;
+
+                let newEventGroup = {
+                    event_id: event_id,
+                    group_id: group_id
+                };
+
+                await this.knex('events_groups').insert(newEventGroup);
+            }
+        } catch (err) {
+            //console.log(err);
+            return false;
+        }
+    }
+
+    async getGroupsByEventId(event_id) {
+        try {
+            const result = await this.knex('events_groups').select('group_id').where('event_id', event_id);
+            let cist_ids = [];
+
+            for(let i = 0; i < result.length; i++) {
+                let group_id = result[i].group_id;
+                let cist_id = await this.getCistIdByGroupId(group_id);
+                if(!cist_id) continue;
+
+                cist_ids.push(cist_id);
+            }
+
+            return cist_ids;
+        } catch (err) {
+            console.log(err);
+            return false;
+        }
+    }
+
     async getEventTypeIdByCistId(cistId) {
         try {
             const result = await this.knex('event_types').where('cist_id', cistId).first();
@@ -433,6 +524,46 @@ class DB {
         try {
             const result = await this.knex('audiences').where('audience_id', audienceId).first();
             return result.name;
+        } catch (err) {
+            console.log(err);
+            return false;
+        }
+    }
+
+    async getTeacherIdByCistId(cistId) {
+        try {
+            const result = await this.knex('teachers').where('cist_id', cistId).first();
+            return result.teacher_id;
+        } catch (err) {
+            console.log(err);
+            return false;
+        }
+    }
+
+    async getCistIdByTeacherId(teacherId) {
+        try {
+            const result = await this.knex('teachers').where('teacher_id', teacherId).first();
+            return result.cist_id;
+        } catch (err) {
+            console.log(err);
+            return false;
+        }
+    }
+
+    async getGroupIdByCistId(cistId) {
+        try {
+            const result = await this.knex('groups').where('cist_id', cistId).first();
+            return result.group_id;
+        } catch (err) {
+            console.log(err);
+            return false;
+        }
+    }
+
+    async getCistIdByGroupId(groupId) {
+        try {
+            const result = await this.knex('groups').where('group_id', groupId).first();
+            return result.cist_id;
         } catch (err) {
             console.log(err);
             return false;

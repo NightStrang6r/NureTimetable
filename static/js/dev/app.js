@@ -31,6 +31,7 @@ export default class App {
         this.calendarContainer = document.querySelector('#calendar-container');
         this.addTip = document.querySelector('.addTip');
         this.reloadButton = document.querySelector('.reload-trigger');
+        this.printButton = document.querySelector('.print-trigger')
         this.storage.setClearTrigger('.clear-button');
 
         let timetables = this.storage.getTimetables();
@@ -56,6 +57,7 @@ export default class App {
         this.storage.onTimetablesSaved((prop) => this.onTimetablesSavedCallback(prop));
         this.storage.onFiltersSaved((prop) => this.onFiltersSavedCallback(prop));
         this.reloadButton.addEventListener('click', (prop) => this.onReloadButton(prop));
+        this.printButton.addEventListener('click', (prop) => this.onPrintButton(prop));
         
         this.popupAdd = new PopupAdd('.cd-popup-add', '.cd-popup-add-trigger');
         new PopupFilter('.cd-popup-filter', '.cd-popup-filter-trigger');
@@ -119,5 +121,9 @@ export default class App {
         if(!selected) return;
         this.storage.deleteCacheById(selected);
         this.loadTimetable(selected);
+    }
+
+    onPrintButton() {
+        window.print();
     }
 }
