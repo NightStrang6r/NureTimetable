@@ -10,6 +10,10 @@ class Router {
         this.locale = new Locale(global.storage.indexesPath, 'uk');
         this.auth = new Auth();
         this.timetable = new Timetable();
+
+        this.getGroupsFromStorages();
+        this.getTeachersFromStorages();
+        this.getAudiencesFromStorages();
     }
 
     async onIndex(req, res) {
@@ -58,80 +62,181 @@ class Router {
                 break;
         }
 
-        const data = await this.API.getTimetable(id, typeId);
-
         res.setHeader('content-type', 'application/json');
-        let error = false;
-        let parsed = null;
+
+        let data = await global.db.getTimetable(id, typeId);
 
         if(data) {
-            try {
-                parsed = JSON.parse(data.toString());
-            } catch(err) {
-                error = "Invalid timetable";
-            }
-        } else {
-            error = "Cist API failed";
-        }
-
-        if(error) {
-            res.send(`{"error": "${error}"}`);
-        } else {
-            let timetableName = this.timetable.getTimetableName(id, typeId, parsed);
-            global.db.createOrUpdateTimetable(id, typeId, timetableName, parsed);
-
-
-
             res.send(data);
+            return;
+        } else {
+            data = await this.API.getTimetable(id, typeId);
+
+            let error = false;
+            let parsed = null;
+
+            if(data) {
+                try {
+                    parsed = JSON.parse(data.toString());
+                } catch(err) {
+                    error = "Invalid timetable";
+                }
+            } else {
+                error = "Cist API failed";
+            }
+
+            if(error) {
+                res.send(`{"error": "${error}"}`);
+            } else {
+                res.send(data);
+
+                let timetableName = this.timetable.getTimetableName(id, typeId, parsed);
+                await global.db.createOrUpdateEventTypes(parsed.types);
+                await global.db.createOrUpdateSubjects(parsed.subjects);
+                await global.db.createOrUpdateTimetable(id, typeId, timetableName, parsed);
+                await global.db.createOrUpdateEvents(id, parsed.events);
+            }
         }
     }
 
     async getGroups(req, res) {
-        const data = await this.API.getGroups();
         res.setHeader('content-type', 'application/json');
 
-        if(!data) {
+        let groups = await this.getGroupsFromStorages();
+
+        if(!groups || typeof groups == 'string') {
             res.send(`{"error": "Cist API failed"}`);
             return;
         }
 
-        let parsed = JSON.parse(data.toString());
-        let groups = [];
-        parsed.university.faculties.forEach(faculty => {
-            faculty.directions.forEach(direction => {
-                groups = groups.concat(direction.groups);
-            })
-        });
-        //global.db.createOrUpdateGroups(groups);
+        res.send(groups);
+    }
 
-        res.send(data);
+    async getGroupsFromStorages() {
+        let result = null;
+
+        if(!global.storage.groupsUpdateTimestamp || (global.storage.groupsUpdateTimestamp + 14400000) < Date.now()) {
+            global.storage.groupsUpdateTimestamp = Date.now();
+
+            result = await this.API.getGroups();
+
+            if(!result) {
+                result = `{"error": "Cist API failed"}`;
+                return result;
+            }
+
+            let parsed = JSON.parse(result.toString());
+            let groups = [];
+            parsed.university.faculties.forEach(faculty => {
+                faculty.directions.forEach(direction => {
+                    groups = groups.concat(direction.groups);
+                })
+            });
+
+            result = groups;
+            global.db.createOrUpdateGroups(groups);
+        } else {
+            result = await global.db.getGroups();
+        }
+
+        return result;
     }
 
     async getTeachers(req, res) {
-        let data = await this.API.getTeachers();
         res.setHeader('content-type', 'application/json');
 
-        if(!data) {
+        let teachers = await this.getTeachersFromStorages();
+
+        if(!teachers || typeof teachers == 'string') {
             res.send(`{"error": "Cist API failed"}`);
             return;
         }
 
-        data = data.toString('utf8');
-        data = data.replace(']}]}]}', ']}]}]}]}'); // This fixes cist json encoding error
-        
-        res.send(data);
+        res.send(teachers);
+    }
+
+    async getTeachersFromStorages() {
+        let result = null;
+
+        if(!global.storage.teachersUpdateTimestamp || (global.storage.teachersUpdateTimestamp + 14400000) < Date.now()) {
+            global.storage.teachersUpdateTimestamp = Date.now();
+
+            result = await this.API.getTeachers();
+
+            if(!result) {
+                res.send(`{"error": "Cist API failed"}`);
+                return result;
+            }
+
+            result = result.toString('utf8');
+            result = result.replace(']}]}]}', ']}]}]}]}'); // This fixes cist json encoding error
+
+            let parsed = JSON.parse(result);
+            let teachers = [];
+            parsed.university.faculties.forEach(faculty => {
+                faculty.departments.forEach(department => {
+                    if(department.teachers) {
+                        teachers = teachers.concat(department.teachers);
+                    }
+
+                    if(department.departments) {
+                        department.departments.forEach(department2 => {
+                            if(department2.teachers) {
+                                teachers = teachers.concat(department2.teachers);
+                            }
+                        });
+                    }
+                });
+            });
+            
+            result = teachers;
+            global.db.createOrUpdateTeachers(teachers);
+        } else {
+            result = await global.db.getTeachers();
+        }
+
+        return result;
     }
 
     async getAudiences(req, res) {
-        const data = await this.API.getAudiences();
         res.setHeader('content-type', 'application/json');
 
-        if(!data) {
+        let audiences = await this.getAudiencesFromStorages();
+
+        if(!audiences || typeof audiences == 'string') {
             res.send(`{"error": "Cist API failed"}`);
             return;
         }
-        
-        res.send(data);
+
+        res.send(audiences);
+    }
+
+    async getAudiencesFromStorages() {
+        let result = null;
+
+        if(!global.storage.audiencesUpdateTimestamp || (global.storage.audiencesUpdateTimestamp + 14400000) < Date.now()) {
+            global.storage.audiencesUpdateTimestamp = Date.now();
+
+            result = await this.API.getAudiences();
+
+            if(!result) {
+                result = `{"error": "Cist API failed"}`;
+                return result;
+            }
+
+            let parsed = JSON.parse(result.toString());
+            let audiences = [];
+            parsed.university.buildings.forEach(building => {
+                audiences = audiences.concat(building.auditories);
+            });
+            
+            result = audiences;
+            global.db.createOrUpdateAudiences(audiences);
+        } else {
+            result = await global.db.getAudiences();
+        }
+
+        return result;
     }
 
     async getDarkTheme(req, res) {
