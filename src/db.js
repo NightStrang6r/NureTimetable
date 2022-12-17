@@ -67,16 +67,6 @@ class DB {
         }
     }
 
-    async getTimetable(id, type) {
-        try {
-            const result = await this.knex('timetable').where('id', id).andWhere('type', type).first();
-            return result;
-        } catch (err) {
-            console.log(err);
-            return false;
-        }
-    }
-
     async createOrUpdateTimetable(id, typeId, name) {
         try {
             let timetable = {
@@ -114,6 +104,8 @@ class DB {
             const teachers = await this.getTeachers();
             const subjects = await this.getSubjects();
             const types = await this.getEventTypes();
+
+            await this.knex('timetables').where('timetable_id', timetable.timetable_id).increment('request_count');
             
             return {
                 events: events,
@@ -206,10 +198,14 @@ class DB {
                 let audience = audiences[i];
                 if(!audience || typeof audience != 'object' || !audience.id) continue;
 
+                let floor = Number(audience.floor);
+                if(isNaN(floor)) floor = null;
+
                 let newAudience = {
                     audience_id: uuid.v4(),
                     cist_id: audience.id,
                     name: audience.short_name,
+                    floor: floor,
                     is_have_power: Number(audience.is_have_power)
                 };
                 
@@ -553,6 +549,7 @@ class DB {
     async getGroupIdByCistId(cistId) {
         try {
             const result = await this.knex('groups').where('cist_id', cistId).first();
+            if(!result) return false;
             return result.group_id;
         } catch (err) {
             console.log(err);
@@ -564,6 +561,16 @@ class DB {
         try {
             const result = await this.knex('groups').where('group_id', groupId).first();
             return result.cist_id;
+        } catch (err) {
+            console.log(err);
+            return false;
+        }
+    }
+
+    async getAudienceNameByCistId(cistId) {
+        try {
+            const result = await this.knex('audiences').where('cist_id', cistId).first();
+            return result.name;
         } catch (err) {
             console.log(err);
             return false;

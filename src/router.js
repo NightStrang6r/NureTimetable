@@ -37,7 +37,8 @@ class Router {
     }
 
     async getTimetable(req, res) {
-        const id = Number(req.query.id);
+        try {
+            const id = Number(req.query.id);
 
         if(isNaN(id) || !req.query.type) {
             this.badRequest(res);
@@ -90,12 +91,22 @@ class Router {
             } else {
                 res.send(data);
 
-                let timetableName = this.timetable.getTimetableName(id, typeId, parsed);
+                let timetableName = '';
+                if(typeId == 3) {
+                    timetableName = await global.db.getAudienceNameByCistId(id);
+                } else {
+                    timetableName = this.timetable.getTimetableName(id, typeId, parsed);
+                }
+                
                 await global.db.createOrUpdateEventTypes(parsed.types);
                 await global.db.createOrUpdateSubjects(parsed.subjects);
                 await global.db.createOrUpdateTimetable(id, typeId, timetableName, parsed);
                 await global.db.createOrUpdateEvents(id, parsed.events);
             }
+        }
+        } catch(err) {
+            console.log(err);
+            return;
         }
     }
 
