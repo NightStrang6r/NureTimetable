@@ -3,11 +3,5 @@
     "secret": "",
     "jwt_secret": "",
     "main": "",
-    "db": {
-        "host": "",
-        "port": 3306,
-        "user": "",
-        "pass": "",
-        "db":   ""
-    }
+    "db": ""
 }

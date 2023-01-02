@@ -12,8 +12,8 @@ class Router {
         this.timetable = new Timetable();
 
         this.getGroupsFromStorages();
-        this.getTeachersFromStorages();
-        this.getAudiencesFromStorages();
+        //this.getTeachersFromStorages();
+        //this.getAudiencesFromStorages();
     }
 
     async onIndex(req, res) {
@@ -40,70 +40,70 @@ class Router {
         try {
             const id = Number(req.query.id);
 
-        if(isNaN(id) || !req.query.type) {
-            this.badRequest(res);
-            return;
-        }
+            if(isNaN(id) || !req.query.type) {
+                this.badRequest(res);
+                return;
+            }
 
-        if(!this.authorize(req, res)) return;
+            if(!this.authorize(req, res)) return;
 
-        let typeId;
-        switch (req.query.type) {
-            case 'groups':
-                typeId = 1;
-                break;
-            case 'teachers':
-                typeId = 2;
-                break;
-            case 'audiences':
-                typeId = 3;
-                break;
-            default:
-                typeId = 1;
-                break;
-        }
+            let typeId;
+            switch (req.query.type) {
+                case 'groups':
+                    typeId = 1;
+                    break;
+                case 'teachers':
+                    typeId = 2;
+                    break;
+                case 'audiences':
+                    typeId = 3;
+                    break;
+                default:
+                    typeId = 1;
+                    break;
+            }
 
-        res.setHeader('content-type', 'application/json');
+            res.setHeader('content-type', 'application/json');
 
-        let data = await global.db.getTimetable(id, typeId);
-
-        if(data) {
-            res.send(data);
-            return;
-        } else {
-            data = await this.API.getTimetable(id, typeId);
-
-            let error = false;
-            let parsed = null;
+            let data = await global.db.getTimetable(id, typeId);
 
             if(data) {
-                try {
-                    parsed = JSON.parse(data.toString());
-                } catch(err) {
-                    error = "Invalid timetable";
-                }
-            } else {
-                error = "Cist API failed";
-            }
-
-            if(error) {
-                res.send(`{"error": "${error}"}`);
-            } else {
                 res.send(data);
+                return;
+            } else {
+                data = await this.API.getTimetable(id, typeId);
 
-                let timetableName = '';
-                if(typeId == 3) {
-                    timetableName = await global.db.getAudienceNameByCistId(id);
+                let error = false;
+                let parsed = null;
+
+                if(data) {
+                    try {
+                        parsed = JSON.parse(data.toString());
+                    } catch(err) {
+                        error = "Invalid timetable";
+                    }
                 } else {
-                    timetableName = this.timetable.getTimetableName(id, typeId, parsed);
+                    error = "Cist API failed";
                 }
-                
-                await global.db.createOrUpdateEventTypes(parsed.types);
-                await global.db.createOrUpdateSubjects(parsed.subjects);
-                await global.db.createOrUpdateTimetable(id, typeId, timetableName, parsed);
-                await global.db.createOrUpdateEvents(id, parsed.events);
+
+                if(error) {
+                    res.send(`{"error": "${error}"}`);
+                } else {
+                    res.send(data);
+
+                    let timetableName = '';
+                    if(typeId == 3) {
+                        timetableName = await global.db.getAudienceNameByCistId(id);
+                    } else {
+                        timetableName = this.timetable.getTimetableName(id, typeId, parsed);
+                    }
+                    
+                    await global.db.createOrUpdateEventTypes(parsed.types);
+                    await global.db.createOrUpdateSubjects(parsed.subjects);
+                    await global.db.createOrUpdateTimetable(id, typeId, timetableName, parsed);
+                    await global.db.createOrUpdateEvents(id, parsed.events);
+                }
             }
-        }
         } catch(err) {
             console.log(err);
             return;
@@ -144,8 +144,21 @@ class Router {
                 })
             });
 
+            let newGroups = [];
+            for(let i = 0; i < groups.length; i++) {
+                let group = groups[i];
+                if(!group || typeof group != 'object' || !group.id) continue;
+
+                let newGroup = {
+                    cist_id: group.id,
+                    name: group.name
+                }
+                
+                newGroups.push(newGroup);
+            }
+
             result = groups;
-            global.db.createOrUpdateGroups(groups);
+            global.db.createOrUpdateGroups(newGroups);
         } else {
             result = await global.db.getGroups();
         }

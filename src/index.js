@@ -13,6 +13,5 @@ global.db = db;
 
 logger.printLogo();
 db.connect();
-db.checkConnection();
 
 server.run();
