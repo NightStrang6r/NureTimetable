@@ -51,6 +51,10 @@ class Storage {
     getLocales() {
         return JSON.parse(fs.readFileSync(this.localesPath));
     }
+
+    getInitSQL() {
+        return fs.readFileSync(`./db/database.sql`).toString();
+    }
 }
 
 module.exports = Storage;

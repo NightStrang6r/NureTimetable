@@ -83,10 +83,14 @@ class Auth {
     }
 
     saveUser(data) {
-        if(!data.email || !data.name || !data.given_name || !data.family_name || !data.locale) return;
+        if(data.email && !data.name) {
+            global.db.updateUserLastActive(data.email);
+            return;
+        }
+
+        if(!data.name || !data.given_name || !data.family_name || !data.locale) return;
 
         let user = {
-            nickname: data.name,
             name: data.given_name,
             surname: data.family_name,
             email: data.email

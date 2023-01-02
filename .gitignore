@@ -1,6 +1,6 @@
 node_modules
 indev
 config.json
-users.json
 static/indexes/*
 build
+database.sqlite

@@ -24,18 +24,72 @@ class API {
     }
 
     async getGroups() {
-        const url = this.URL.getGroupsUrl();
-        return this.request(url);
+        try {
+            const url = this.URL.getGroupsUrl();
+
+            let data = await this.request(url);
+    
+            let parsed = JSON.parse(data.toString());
+            let groups = [];
+            parsed.university.faculties.forEach(faculty => {
+                faculty.directions.forEach(direction => {
+                    groups = groups.concat(direction.groups);
+                })
+            });
+    
+            return groups;
+        } catch (err) {
+            console.log(`Error while getGroups: ${err}`);
+            return null;
+        }
     }
 
     async getTeachers() {
-        const url = this.URL.getTeachersUrl();
-        return this.request(url);
+        try {
+            const url = this.URL.getTeachersUrl();
+
+            let data = await this.request(url);
+    
+            data = data.toString('utf8');
+            data = data.replace(']}]}]}', ']}]}]}]}'); // This fixes cist json encoding error
+    
+            let parsed = JSON.parse(data);
+            let teachers = [];
+            parsed.university.faculties.forEach(faculty => {
+                faculty.departments.forEach(department => {
+                    if(department.teachers) {
+                        teachers = teachers.concat(department.teachers);
+                    }
+    
+                    if(department.departments) {
+                        department.departments.forEach(department2 => {
+                            if(department2.teachers) {
+                                teachers = teachers.concat(department2.teachers);
+                            }
+                        });
+                    }
+                });
+            });
+    
+            return teachers;
+        } catch (err) {
+            console.log(`Error while getTeachers: ${err}`);
+            return null;
+        }
     }
 
     async getAudiences() {
         const url = this.URL.getAudiencesUrl();
-        return this.request(url);
+
+        let data = await this.request(url);
+
+        let parsed = JSON.parse(data.toString());
+        let audiences = [];
+        parsed.university.buildings.forEach(building => {
+            audiences = audiences.concat(building.auditories);
+        });
+
+        return audiences;
     }
 
     async decode(response) {

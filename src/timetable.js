@@ -4,7 +4,7 @@ class Timetable {
 
         switch (type) {
             case 2:
-                name = this.getTeacherById(timetable, id).full_name;
+                name = this.getTeacherById(timetable, id).short_name;
                 break;
             default:
                 name = this.getGroupById(timetable, id).name;
