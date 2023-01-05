@@ -1,19 +1,13 @@
 const express = require('express');
-const API = require('./API.js');
 const Locale = require('./locale.js');
 const Auth = require('./auth.js');
-const Timetable = require('./timetable.js');
+const BL = require('./bl.js');
 
 class Router {
     constructor() {
-        this.API = new API();
         this.locale = new Locale(global.storage.indexesPath, 'uk');
         this.auth = new Auth();
-        this.timetable = new Timetable();
-
-        this.getGroupsFromStorages();
-        this.getTeachersFromStorages();
-        this.getAudiencesFromStorages();
+        this.BL = new BL();
     }
 
     async onIndex(req, res) {
@@ -47,61 +41,16 @@ class Router {
 
             if(!this.authorize(req, res)) return;
 
-            let typeId;
-            switch (req.query.type) {
-                case 'groups':
-                    typeId = 1;
-                    break;
-                case 'teachers':
-                    typeId = 2;
-                    break;
-                case 'audiences':
-                    typeId = 3;
-                    break;
-                default:
-                    typeId = 1;
-                    break;
-            }
-
             res.setHeader('content-type', 'application/json');
 
-            let data = await global.db.getTimetable(id, typeId);
+            let timetable = await this.BL.getTimetable(id, req.query.type);
 
-            if(data) {
-                res.send(data);
+            if(!timetable.data || timetable.error) {
+                res.send(`{"error": "${timetable.data}"}`);
                 return;
             }
-            
-            data = await this.API.getTimetable(id, typeId);
 
-            let error = false;
-            let parsed = null;
-
-            if(data) {
-                try {
-                    data = data.toString();
-                    parsed = JSON.parse(data.toString());
-                } catch(err) {
-                    error = "Invalid timetable";
-                }
-            } else {
-                error = "Cist API failed";
-            }
-
-            if(error) {
-                res.send(`{"error": "${error}"}`);
-            } else {
-                res.send(data);
-
-                let timetableName = '';
-                if(typeId == 3) {
-                    timetableName = await global.db.getAudienceNameByCistId(id);
-                } else {
-                    timetableName = this.timetable.getTimetableName(id, typeId, parsed);
-                }
-                    
-                await global.db.createOrUpdateTimetable(id, typeId, timetableName, data);
-            }
+            res.send(timetable.data);
         } catch(err) {
             console.log(err);
             return;
@@ -111,7 +60,7 @@ class Router {
     async getGroups(req, res) {
         res.setHeader('content-type', 'application/json');
 
-        let groups = await this.getGroupsFromStorages();
+        let groups = await this.BL.getGroups();
 
         if(!groups || typeof groups == 'string') {
             res.send(`{"error": "Cist API failed"}`);
@@ -121,45 +70,10 @@ class Router {
         res.send(groups);
     }
 
-    async getGroupsFromStorages() {
-        let result = null;
-
-        if(!global.storage.groupsUpdateTimestamp || (global.storage.groupsUpdateTimestamp + 14400000) < Date.now()) {
-            global.storage.groupsUpdateTimestamp = Date.now();
-
-            let groups = await this.API.getGroups();
-
-            if(!groups) {
-                result = `{"error": "Cist API failed"}`;
-                return result;
-            }
-
-            let newGroups = [];
-            for(let i = 0; i < groups.length; i++) {
-                let group = groups[i];
-                if(!group || typeof group != 'object' || !group.id) continue;
-
-                let newGroup = {
-                    cist_id: group.id,
-                    name: group.name
-                }
-                
-                newGroups.push(newGroup);
-            }
-
-            result = groups;
-            global.db.createOrUpdateGroups(newGroups);
-        } else {
-            result = await global.db.getGroups();
-        }
-
-        return result;
-    }
-
     async getTeachers(req, res) {
         res.setHeader('content-type', 'application/json');
 
-        let teachers = await this.getTeachersFromStorages();
+        let teachers = await this.BL.getTeachers();
 
         if(!teachers || typeof teachers == 'string') {
             res.send(`{"error": "Cist API failed"}`);
@@ -169,32 +83,10 @@ class Router {
         res.send(teachers);
     }
 
-    async getTeachersFromStorages() {
-        let result = null;
-
-        if(!global.storage.teachersUpdateTimestamp || (global.storage.teachersUpdateTimestamp + 14400000) < Date.now()) {
-            global.storage.teachersUpdateTimestamp = Date.now();
-
-            let teachers = await this.API.getTeachers();
-
-            if(!teachers) {
-                res.send(`{"error": "Cist API failed"}`);
-                return result;
-            }
-            
-            result = teachers;
-            global.db.createOrUpdateTeachers(teachers);
-        } else {
-            result = await global.db.getTeachers();
-        }
-
-        return result;
-    }
-
     async getAudiences(req, res) {
         res.setHeader('content-type', 'application/json');
 
-        let audiences = await this.getAudiencesFromStorages();
+        let audiences = await this.BL.getAudiences();
 
         if(!audiences || typeof audiences == 'string') {
             res.send(`{"error": "Cist API failed"}`);
@@ -202,28 +94,6 @@ class Router {
         }
 
         res.send(audiences);
-    }
-
-    async getAudiencesFromStorages() {
-        let result = null;
-
-        if(!global.storage.audiencesUpdateTimestamp || (global.storage.audiencesUpdateTimestamp + 14400000) < Date.now()) {
-            global.storage.audiencesUpdateTimestamp = Date.now();
-
-            let audiences = await this.API.getAudiences();
-
-            if(!audiences) {
-                result = `{"error": "Cist API failed"}`;
-                return result;
-            }
-            
-            result = audiences;
-            global.db.createOrUpdateAudiences(audiences);
-        } else {
-            result = await global.db.getAudiences();
-        }
-
-        return result;
     }
 
     async getDarkTheme(req, res) {

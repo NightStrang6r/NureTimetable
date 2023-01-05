@@ -19,8 +19,14 @@ class API {
     }
     
     async getTimetable(id, typeId) {
-        const url = this.URL.getTimetableUrl(id, typeId);
-        return this.request(url);
+        try {
+            const url = this.URL.getTimetableUrl(id, typeId);
+            const res = await this.request(url);
+            return res.toString();
+        } catch (err) {
+            console.log(`Error while getTimetable: ${err}`);
+            return null;
+        }
     }
 
     async getGroups() {

@@ -1,4 +1,5 @@
 const uuid = require('uuid');
+const c = require('chalk');
 
 class DB {
     constructor() {
@@ -34,6 +35,7 @@ class DB {
             if(result == 0) {
                 user.registration_date = user.lastactive_date;
                 result = await this.knex('users').insert(user);
+                console.log(`${c.green('New user')} ${c.yellow(user.email)} ${c.green('registered.')}`);
             }
 
             return result;
@@ -67,7 +69,9 @@ class DB {
 
             if(result == 0) {
                 timetable.creation_date = timetable.update_date;
+                timetable.request_count = 1;
                 result = await this.knex('timetables').insert(timetable);
+                console.log(`${c.green('New timetable')} ${c.yellow(timetable.name)} ${c.green('created.')}`);
             }
 
             return result;
@@ -77,14 +81,25 @@ class DB {
         }
     }
 
+    async incrementTimetableReqCount(cist_id, type) {
+        try {
+            let result = await this.knex('timetables').where('cist_id', cist_id).where('type', type).increment('request_count', 1);
+            return result;
+        } catch (err) {
+            console.log(err);
+            return false;
+        }
+    }
+
     async getTimetable(cist_id, type) {
         try {
-            let timetable = await this.knex('timetables').select('data')
+            let timetable = await this.knex('timetables').select('*')
                 .where('cist_id', cist_id)
                 .where('type', type)
                 .first();
 
-            return timetable.data;
+            if(!timetable) return false;
+            return timetable;
         } catch (err) {
             console.log(err);
             return false;
@@ -93,6 +108,8 @@ class DB {
 
     async createOrUpdateGroups(groups) {
         try {
+            let inserted = 0;
+
             for(let i = 0; i < groups.length; i++) {
                 let group = groups[i];
                 if(!group || typeof group != 'object' || !group.cist_id) continue;
@@ -107,8 +124,12 @@ class DB {
 
                 if(!result) {
                     result = await this.knex('groups').insert(newGroup);
+                    inserted++;
                 }
             }
+
+            if(inserted > 0)
+                console.log(`${c.cyan('Groups update:')} Inserted ${inserted} groups.`);
         } catch (err) {
             console.log(err);
             return false;
@@ -117,7 +138,7 @@ class DB {
 
     async getGroups() {
         try {
-            const result = await this.knex('groups').select('cist_id as id', 'name').orderBy('name');
+            const result = await this.knex('groups').select('cist_id as id', 'name', 'valid_timetable').orderBy('name');
             return result;
         } catch (err) {
             console.log(err);
@@ -127,6 +148,8 @@ class DB {
 
     async createOrUpdateTeachers(teachers) {
         try {
+            let inserted = 0;
+
             for(let i = 0; i < teachers.length; i++) {
                 let teacher = teachers[i];
                 if(!teacher || typeof teacher != 'object' || !teacher.id) continue;
@@ -142,8 +165,12 @@ class DB {
 
                 if(!result) {
                     result = await this.knex('teachers').insert(newTeacher);
+                    inserted++;
                 }
             }
+        
+            if(inserted > 0)
+                console.log(`${c.cyan('Teachers update:')} Inserted ${inserted} audiences.`);
         } catch (err) {
             console.log(err);
             return false;
@@ -152,7 +179,7 @@ class DB {
 
     async getTeachers() {
         try {
-            const result = await this.knex('teachers').select('cist_id as id', 'short_name', 'full_name').orderBy('short_name');
+            const result = await this.knex('teachers').select('cist_id as id', 'short_name', 'full_name', 'valid_timetable').orderBy('short_name');
             return result;
         } catch (err) {
             console.log(err);
@@ -162,6 +189,8 @@ class DB {
 
     async createOrUpdateAudiences(audiences) {
         try {
+            let inserted = 0;
+
             for(let i = 0; i < audiences.length; i++) {
                 let audience = audiences[i];
                 if(!audience || typeof audience != 'object' || !audience.id) continue;
@@ -178,8 +207,12 @@ class DB {
 
                 if(!result) {
                     result = await this.knex('audiences').insert(newAudience);
+                    inserted++;
                 }
             }
+
+            if(inserted > 0)
+                console.log(`${c.cyan('Audiences update:')} Inserted ${inserted} audiences.`);
         } catch (err) {
             console.log(err);
             return false;
@@ -188,7 +221,47 @@ class DB {
 
     async getAudiences() {
         try {
-            const result = await this.knex('audiences').select('cist_id as id', 'name as short_name', 'floor', 'is_have_power').orderBy('short_name');
+            const result = await this.knex('audiences').select('cist_id as id', 'name as short_name', 'floor', 'is_have_power', 'valid_timetable').orderBy('short_name');
+            return result;
+        } catch (err) {
+            console.log(err);
+            return false;
+        }
+    }
+
+    async getAudienceNameByCistId(cist_id) {
+        try {
+            const result = await this.knex('audiences').select('name').where('cist_id', cist_id).first();
+            return result.name;
+        } catch (err) {
+            console.log(err);
+            return false;
+        }
+    }
+
+    async setGroupValidTimetable(cist_id, valid_timetable) {
+        try {
+            let result = await this.knex('groups').where('cist_id', cist_id).update('valid_timetable', valid_timetable);
+            return result;
+        } catch (err) {
+            console.log(err);
+            return false;
+        }
+    }
+
+    async setTeacherValidTimetable(cist_id, valid_timetable) {
+        try {
+            let result = await this.knex('teachers').where('cist_id', cist_id).update('valid_timetable', valid_timetable);
+            return result;
+        } catch (err) {
+            console.log(err);
+            return false;
+        }
+    }
+
+    async setAudienceValidTimetable(cist_id, valid_timetable) {
+        try {
+            let result = await this.knex('audiences').where('cist_id', cist_id).update('valid_timetable', valid_timetable);
             return result;
         } catch (err) {
             console.log(err);

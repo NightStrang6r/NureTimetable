@@ -1,6 +1,7 @@
 const express = require('express');
 const cookieParser = require('cookie-parser');
 const Router = require('./router.js');
+const c = require('chalk');
 
 class Server {
     constructor(port) {
@@ -27,7 +28,7 @@ class Server {
     }
 
     onListen() {
-        console.log(`NureTimetable server is running on port ${this.port}`);
+        console.log(`${c.cyan('NureTimetable Server')} ${c.green(`is running on port ${this.port}`)}`);
     }
 }
 
