@@ -12,7 +12,7 @@
         <meta name="og:url" content="https://nure.date" />
         <meta name="og:image" content="https://nure.date/assets/logo.png" />
         
-        <link rel='shortcut icon' href="data:image/svg+xml,<svg xmlns=%22http://www.w3.org/2000/svg%22 viewBox=%220 0 100 100%22><text y=%22.9em%22 font-size=%2290%22>📅</text></svg>" />
+        <link rel='shortcut icon' href="assets/shortcut_icon.png" />
         <link href='lib/calendar.min.css' rel='stylesheet' />
         <link href='css/material.css' rel='stylesheet' />
         <link href='css/style.css' rel='stylesheet' />
@@ -289,6 +289,20 @@
                 <div class="popup-down">
                     <button class="button delete-button event-data-delete">${delete}</button>
                     <button class="button edit-button event-data-edit">${edit}</button>
+                </div>
+                <a class="cd-popup-close img-replace"></a>
+            </div>
+        </div>
+        <!-- /Popup-Event-View -->
+
+        <!-- Popup-Fixed-Event-View -->
+        <div class="cd-popup cd-popup-fixed-event-view d-none" role="alert">
+            <div class="cd-popup-container">
+                <p class="fixed-event-title">${event}</p>
+                <div class="event-data">
+                    <div class="event-item fixed-event-description">
+                        
+                    </div>
                 </div>
                 <a class="cd-popup-close img-replace"></a>
             </div>

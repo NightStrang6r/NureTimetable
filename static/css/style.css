@@ -792,7 +792,7 @@ input[type=checkbox]:checked ~ .sidebarIconToggle > .diagonal.part-2 {
     word-wrap: break-word;
 }
 
-.event-data-description {
+.event-data-description .fixed-event-description {
     word-wrap: break-word;
 }
 
@@ -816,6 +816,11 @@ input[type=checkbox]:checked ~ .sidebarIconToggle > .diagonal.part-2 {
 
 .edit-button:hover {
     background-color: #3e608d;
+}
+
+/* POPUP-FIXED-EVENT-VIEW */
+.cd-popup-fixed-event-view .cd-popup-container {
+    width: 30%;
 }
 
 /* CHECKBOXES */

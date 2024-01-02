@@ -691,6 +691,28 @@
     }
   };
 
+  // static/js/dev/popupFixedEventView.js
+  var PopupFixedEventView = class extends Popup {
+    constructor(popupSelector) {
+      super(popupSelector, null);
+      this.popupTitleEl = this.popupEl.querySelector(".fixed-event-title");
+      this.popupDescriptionEl = this.popupEl.querySelector(".fixed-event-description");
+    }
+    setupListeners() {
+      this.popupEl.classList.remove("d-none");
+      this.popupEl.addEventListener("click", (event) => this.closeEvent(event));
+      document.addEventListener("keyup", (event) => this.closeEvent(event));
+    }
+    open(info, locale) {
+      this.popupEl.classList.add("is-visible");
+      this.popupTitleEl.innerHTML = info.title;
+      this.popupDescriptionEl.innerHTML = `${locale.type}: ${info.type} (${info.currentLesson}/${info.lessonsCount})<br>${locale.audience}: ${info.auditory}<br>${locale.teachers}: ${info.teachers}<br>${locale.groups}: ${info.groups}<br>${locale.dayUpper}: ${info.day}<br>${locale.time}: ${info.start} - ${info.end}`;
+    }
+    close() {
+      super.close();
+    }
+  };
+
   // static/js/dev/calendar.js
   var Calendar = class {
     constructor(selector) {
@@ -737,6 +759,7 @@
       this.storage = window.storage;
       this.popupAdd = new PopupEventAdd(".cd-popup-event-add", this);
       this.popupView = new PopupEventView(".cd-popup-event-view", this);
+      this.popupFixedView = new PopupFixedEventView(".cd-popup-fixed-event-view");
       document.addEventListener("click", () => this.onCalendarElClick());
     }
     render() {
@@ -818,19 +841,16 @@
       }
     }
     onFixedEvent(info) {
-      console.log(this.calendar);
       let parser = new Parser(this.timetable);
-      console.log("Calendar: Fixed event click:");
-      console.log(info);
       let properties = info.event.extendedProps;
       let title = properties.subject.title;
       let type = properties.type.full_name;
       let auditory = properties.auditory;
       let groups = "";
       let teachers = "";
-      let day = info.event.start.toLocaleString(this.lang, { weekday: "long", year: "numeric", month: "numeric", day: "numeric" });
-      let start = info.event.start.toLocaleString(this.lang, { hour: "numeric", minute: "numeric" });
-      let end = info.event.end.toLocaleString(this.lang, { hour: "numeric", minute: "numeric" });
+      let day = info.event.start.toLocaleString(this.locale.lang, { weekday: "long", year: "numeric", month: "numeric", day: "numeric" });
+      let start = info.event.start.toLocaleString(this.locale.lang, { hour: "numeric", minute: "numeric" });
+      let end = info.event.end.toLocaleString(this.locale.lang, { hour: "numeric", minute: "numeric" });
       let lessonsCount = parser.countLessons(properties.subject.id, properties.type.id, properties.teachers);
       let currentLesson = parser.countCurrentLesson(properties.subject.id, properties.type.id, properties.start, properties.end);
       properties.teachers.forEach((id) => {
@@ -839,14 +859,19 @@
       properties.groups.forEach((id) => {
         groups += `${parser.getGroupById(id).name} `;
       });
-      alert(`${title}
-
-${this.locale.type}: ${type} (${currentLesson}/${lessonsCount})
-${this.locale.audience}: ${auditory}
-${this.locale.teachers}: ${teachers}
-${this.locale.groups}: ${groups}
-${this.locale.dayUpper}: ${day}
-${this.locale.time}: ${start} - ${end}`);
+      const options = {
+        title,
+        type,
+        auditory,
+        groups,
+        teachers,
+        day,
+        start,
+        end,
+        lessonsCount,
+        currentLesson
+      };
+      this.popupFixedView.open(options, this.locale);
     }
     onCustomEvent(info) {
       this.popupView.open(info);
@@ -860,7 +885,6 @@ ${this.locale.time}: ${start} - ${end}`);
     onCalendarElClick() {
       let parser = new Parser(this.timetable);
       if (this.calendar.currentData.currentViewType == "timeGridDay") {
-        console.log("Added");
         this.calendar.getEvents().forEach((event) => {
           if (event.start.toDateString() != new Date().toDateString())
             return;
@@ -885,7 +909,6 @@ ${currentLesson}/${lessonsCount}`;
           event.setExtendedProp("fullDataView", "true");
         });
       } else {
-        console.log("Cleared");
         this.calendar.getEvents().forEach((event) => {
           if (event.extendedProps.fullDataView != "true")
             return;

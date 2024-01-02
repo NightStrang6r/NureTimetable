@@ -1,6 +1,7 @@
 import Parser from './parser.js';
 import PopupEventAdd from './popupEventAdd.js';
 import PopupEventView from './popupEventView.js';
+import PopupFixedEventView from './popupFixedEventView.js';
 
 export default class Calendar {
     constructor(selector) {
@@ -50,6 +51,7 @@ export default class Calendar {
         this.storage = window.storage;
         this.popupAdd = new PopupEventAdd('.cd-popup-event-add', this);
         this.popupView = new PopupEventView('.cd-popup-event-view', this);
+        this.popupFixedView = new PopupFixedEventView('.cd-popup-fixed-event-view');
 
         document.addEventListener('click', () => this.onCalendarElClick());
     }
@@ -146,11 +148,11 @@ export default class Calendar {
     }
 
     onFixedEvent(info) {
-        console.log(this.calendar);
+        //console.log(this.calendar);
         let parser = new Parser(this.timetable);
 
-        console.log('Calendar: Fixed event click:');
-        console.log(info);
+        //console.log('Calendar: Fixed event click:');
+        //console.log(info);
         let properties = info.event.extendedProps;
 
         let title = properties.subject.title;
@@ -158,9 +160,9 @@ export default class Calendar {
         let auditory = properties.auditory;
         let groups = '';
         let teachers = '';
-        let day = info.event.start.toLocaleString(this.lang, { weekday: 'long', year: 'numeric', month: 'numeric', day: 'numeric' });
-        let start = info.event.start.toLocaleString(this.lang, { hour: 'numeric', minute: 'numeric' });
-        let end = info.event.end.toLocaleString(this.lang, { hour: 'numeric', minute: 'numeric' });
+        let day = info.event.start.toLocaleString(this.locale.lang, { weekday: 'long', year: 'numeric', month: 'numeric', day: 'numeric' });
+        let start = info.event.start.toLocaleString(this.locale.lang, { hour: 'numeric', minute: 'numeric' });
+        let end = info.event.end.toLocaleString(this.locale.lang, { hour: 'numeric', minute: 'numeric' });
         let lessonsCount = parser.countLessons(properties.subject.id, properties.type.id, properties.teachers);
         let currentLesson = parser.countCurrentLesson(properties.subject.id, properties.type.id, properties.start, properties.end);
 
@@ -172,7 +174,20 @@ export default class Calendar {
             groups += `${parser.getGroupById(id).name} `;
         });
 
-        alert(`${title}\n\n${this.locale.type}: ${type} (${currentLesson}/${lessonsCount})\n${this.locale.audience}: ${auditory}\n${this.locale.teachers}: ${teachers}\n${this.locale.groups}: ${groups}\n${this.locale.dayUpper}: ${day}\n${this.locale.time}: ${start} - ${end}`);
+        const options = {
+            title: title,
+            type: type,
+            auditory: auditory,
+            groups: groups,
+            teachers: teachers,
+            day: day,
+            start: start,
+            end: end,
+            lessonsCount: lessonsCount,
+            currentLesson: currentLesson
+        }
+
+        this.popupFixedView.open(options, this.locale);
     }
 
     onCustomEvent(info) {
@@ -195,7 +210,7 @@ export default class Calendar {
         let parser = new Parser(this.timetable);
 
         if(this.calendar.currentData.currentViewType == "timeGridDay") {
-            console.log('Added')
+            //console.log('Added')
             this.calendar.getEvents().forEach((event) => {
                 if(event.start.toDateString() != new Date().toDateString()) return;
                 
@@ -223,7 +238,7 @@ export default class Calendar {
                 event.setExtendedProp('fullDataView', 'true');
             });
         } else {
-            console.log('Cleared')
+            //console.log('Cleared')
             this.calendar.getEvents().forEach((event) => {
                 if(event.extendedProps.fullDataView != 'true') return;
 
