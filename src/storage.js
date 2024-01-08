@@ -34,12 +34,6 @@ class Storage {
         return await fsa.readFile(`${this.indexesPath}/index_${lang}.html`);
     }
 
-    getLocales() {
-        let locales = fs.readFileSync(this.localesPath, 'utf8');
-        locales = JSON.parse(this.locales);
-        return locales;
-    }
-
     saveLocales(langCode, translation) {
         fs.writeFileSync(`${this.indexesPath}/index_${langCode}.html`, translation);
     }
