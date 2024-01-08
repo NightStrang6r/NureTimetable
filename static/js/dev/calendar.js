@@ -9,7 +9,11 @@ export default class Calendar {
 
         this.loadLocalization();
 
-        const options = {
+        this.options = {
+            swipeEffect: 'slide',
+            swipeSpeed: 250,
+            swipeTitlePosition: 'none',
+
             headerToolbar: {
                 left: 'prev,next today',
                 center: 'title',
@@ -47,7 +51,7 @@ export default class Calendar {
             eventChange: (event) => this.onEventChange(event)
         }
     
-        this.calendar = new FullCalendar.Calendar(this.calendarEl, options);
+        this.calendar = null;
         this.storage = window.storage;
         this.popupAdd = new PopupEventAdd('.cd-popup-event-add', this);
         this.popupView = new PopupEventView('.cd-popup-event-view', this);
@@ -56,12 +60,24 @@ export default class Calendar {
         document.addEventListener('click', () => this.onCalendarElClick());
     }
 
+    create() {
+        this.calendar = new SwipeCalendar(this.calendarEl, this.options);
+    }
+
     render() {
         this.calendar.render();
     }
 
     destroy() {
         this.calendar.destroy();
+    }
+
+    setViewable(view) {
+        if (view) {
+            this.calendarEl.classList.remove('d-none');
+        } else {
+            this.calendarEl.classList.add('d-none');
+        }
     }
 
     setTimetable(timetab) {
@@ -209,7 +225,7 @@ export default class Calendar {
     onCalendarElClick() {
         let parser = new Parser(this.timetable);
 
-        if(this.calendar.currentData.currentViewType == "timeGridDay") {
+        if(this.calendar.currentData && this.calendar.currentData.currentViewType == "timeGridDay") {
             //console.log('Added')
             this.calendar.getEvents().forEach((event) => {
                 if(event.start.toDateString() != new Date().toDateString()) return;

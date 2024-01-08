@@ -74,8 +74,13 @@ export default class App {
             this.addTip.classList.add('d-none');
         }
 
-        this.calendar.destroy();
         this.preloader.start();
+
+        if (this.calendar.calendar) {
+            this.calendar.destroy();
+        }
+        
+        this.calendar.create();
 
         if(!id) {
             this.calendar.removeEvents();

@@ -718,7 +718,10 @@
     constructor(selector) {
       this.calendarEl = document.querySelector(selector);
       this.loadLocalization();
-      const options = {
+      this.options = {
+        swipeEffect: "slide",
+        swipeSpeed: 250,
+        swipeTitlePosition: "none",
         headerToolbar: {
           left: "prev,next today",
           center: "title",
@@ -755,18 +758,28 @@
         eventClick: (event) => this.onEventClick(event),
         eventChange: (event) => this.onEventChange(event)
       };
-      this.calendar = new FullCalendar.Calendar(this.calendarEl, options);
+      this.calendar = null;
       this.storage = window.storage;
       this.popupAdd = new PopupEventAdd(".cd-popup-event-add", this);
       this.popupView = new PopupEventView(".cd-popup-event-view", this);
       this.popupFixedView = new PopupFixedEventView(".cd-popup-fixed-event-view");
       document.addEventListener("click", () => this.onCalendarElClick());
     }
+    create() {
+      this.calendar = new SwipeCalendar(this.calendarEl, this.options);
+    }
     render() {
       this.calendar.render();
     }
     destroy() {
       this.calendar.destroy();
+    }
+    setViewable(view) {
+      if (view) {
+        this.calendarEl.classList.remove("d-none");
+      } else {
+        this.calendarEl.classList.add("d-none");
+      }
     }
     setTimetable(timetab) {
       this.timetable = timetab;
@@ -884,7 +897,7 @@
     }
     onCalendarElClick() {
       let parser = new Parser(this.timetable);
-      if (this.calendar.currentData.currentViewType == "timeGridDay") {
+      if (this.calendar.currentData && this.calendar.currentData.currentViewType == "timeGridDay") {
         this.calendar.getEvents().forEach((event) => {
           if (event.start.toDateString() != new Date().toDateString())
             return;
@@ -1433,8 +1446,11 @@ ${currentLesson}/${lessonsCount}`;
         this.calendarContainer.classList.remove("d-none");
         this.addTip.classList.add("d-none");
       }
-      this.calendar.destroy();
       this.preloader.start();
+      if (this.calendar.calendar) {
+        this.calendar.destroy();
+      }
+      this.calendar.create();
       if (!id) {
         this.calendar.removeEvents();
         this.calendar.render();
