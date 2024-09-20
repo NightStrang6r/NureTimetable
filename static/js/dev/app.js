@@ -66,7 +66,7 @@ export default class App {
         this.popupAdd.addOpenSelect('.timetable-select', 0);
     }
 
-    async loadTimetable(id) {
+    async loadTimetable(id, reload = false) {
         let timetable;
 
         if(this.auth.check()) {
@@ -86,7 +86,7 @@ export default class App {
 
         this.storage.saveSelected(id);
         this.calendar.removeEvents();
-        timetable = await this.storage.getTimetable(id);
+        timetable = await this.storage.getTimetable(id, reload);
         
         if(timetable.error) {
             this.preloader.stop();
@@ -119,8 +119,8 @@ export default class App {
     onReloadButton() {
         let selected = this.storage.getSelected();
         if(!selected) return;
-        this.storage.deleteCacheById(selected);
-        this.loadTimetable(selected);
+        //this.storage.deleteCacheById(selected);
+        this.loadTimetable(selected, true);
     }
 
     onPrintButton() {

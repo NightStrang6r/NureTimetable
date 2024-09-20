@@ -141,11 +141,9 @@
     }
     addOpenSelect(selector, selectId) {
       let select = document.querySelector(selector);
-      if (select == null)
-        return;
+      if (select == null) return;
       select.addEventListener("input", (event) => {
-        if (select.selectedIndex != selectId)
-          return;
+        if (select.selectedIndex != selectId) return;
         this.open(event);
       });
     }
@@ -210,27 +208,30 @@
       getTimetable = this.getTimetable;
       getTimetables = this.getTimetables;
     }
+    // Возвращает все расписания из кэша
     getTimetables() {
-      if (!localStorage.timetables)
-        return [];
+      if (!localStorage.timetables) return [];
       return JSON.parse(localStorage.timetables);
     }
+    // Сохраняет все расписания в кэш
     saveTimetables(timetables) {
       localStorage.timetables = JSON.stringify(timetables);
       onTimetablesSaved(timetables);
     }
+    // Колбэк функция, вызывается при сохранении расписания
     onTimetablesSaved(callback) {
       onTimetablesSaved = callback;
     }
     deleteSelected() {
       return delete localStorage.selected;
     }
+    // Сохраняет id выбранного расписания
     saveSelected(id) {
       localStorage.selected = id;
     }
+    // Возвращает id выбранного расписания
     getSelected() {
-      if (localStorage.selected)
-        return Number(localStorage.selected);
+      if (localStorage.selected) return Number(localStorage.selected);
       return null;
     }
     saveFilters(filter) {
@@ -238,8 +239,7 @@
       onFiltersSaved(filter);
     }
     getFilters() {
-      if (localStorage.filter)
-        return JSON.parse(localStorage.filter);
+      if (localStorage.filter) return JSON.parse(localStorage.filter);
       return null;
     }
     onFiltersSaved(callback) {
@@ -251,18 +251,15 @@
     }
     getDarkTheme() {
       let dark = this.getCookie("dark");
-      if (dark == "true")
-        return true;
-      if (dark == "false")
-        return false;
+      if (dark == "true") return true;
+      if (dark == "false") return false;
       return null;
     }
     saveDarkCSS(css) {
       localStorage.darkCSS = css;
     }
     getDarkCSS() {
-      if (localStorage.darkCSS)
-        return localStorage.darkCSS;
+      if (localStorage.darkCSS) return localStorage.darkCSS;
       return null;
     }
     saveCustomEvents(events) {
@@ -281,8 +278,7 @@
       localStorage.customEvents = JSON.stringify(events);
     }
     getCustomEvents() {
-      if (localStorage.customEvents)
-        return JSON.parse(localStorage.customEvents);
+      if (localStorage.customEvents) return JSON.parse(localStorage.customEvents);
       return [];
     }
     setAuth(auth) {
@@ -293,21 +289,18 @@
     }
     getAuth() {
       let auth = this.getCookie("key");
-      if (auth)
-        return auth;
+      if (auth) return auth;
       return null;
     }
     getClient() {
       let client = this.getCookie("client");
-      if (client)
-        return decodeURIComponent(client).split(";");
+      if (client) return decodeURIComponent(client).split(";");
       return null;
     }
     updateCustomEvent(newEvent, oldEvent) {
       let events = this.getCustomEvents();
       events.forEach((event, index) => {
-        if (!this.isEventEqual(event, oldEvent))
-          return;
+        if (!this.isEventEqual(event, oldEvent)) return;
         events.splice(index, 1);
         if (newEvent != null) {
           newEvent.allDayEvent = true;
@@ -321,15 +314,11 @@
     }
     isEventEqual(event1, event2) {
       if (event2.start && event2.end) {
-        if (new Date(event1.start).getTime() != event2.start.getTime())
-          return false;
-        if (new Date(event1.end).getTime() != event2.end.getTime())
-          return false;
+        if (new Date(event1.start).getTime() != event2.start.getTime()) return false;
+        if (new Date(event1.end).getTime() != event2.end.getTime()) return false;
       }
-      if (event1.title != event2.title)
-        return false;
-      if (String(event1.extendedProps.description) != event2.extendedProps.description)
-        return false;
+      if (event1.title != event2.title) return false;
+      if (String(event1.extendedProps.description) != event2.extendedProps.description) return false;
       return true;
     }
     deleteCacheById(id) {
@@ -349,37 +338,46 @@
     }
     async getTimetable(id, reload = false) {
       let timetables = this.getTimetables();
+      let cachedTimetable = null;
       let type, name;
       if (timetables.length > 0) {
-        for (let i = 0; i < timetables.length; i++) {
-          let timetable = timetables[i];
-          if (timetable.id == id) {
-            if (!timetable.data) {
-              type = timetable.type;
-              name = timetable.name;
-              timetables.splice(i, 1);
-              break;
-            } else if (reload) {
-              delete timetable.data;
-              break;
-            }
-            this.timetable = JSON.parse(timetable.data);
+        cachedTimetable = timetables.find((timetable) => timetable.id == id);
+        if (cachedTimetable && !reload) {
+          if (cachedTimetable.data) {
+            this.timetable = JSON.parse(cachedTimetable.data);
             return this.timetable;
           }
         }
       }
-      this.timetable = await api.getTimetable(id, type);
-      if (!this.timetable) {
-        this.timetable = {};
-        this.timetable.error = true;
-        return this.timetable;
+      if (cachedTimetable) {
+        type = cachedTimetable.type;
+        name = cachedTimetable.name;
       }
-      timetables.push({
+      try {
+        const response = await api.getTimetable(id, type);
+        if (!response) throw new Error("API request failed.");
+        this.timetable = response;
+      } catch (error) {
+        console.log(`Error fetching timetable from API: ${error}`);
+      }
+      if (!this.timetable || this.timetable.error) {
+        if (cachedTimetable && cachedTimetable.data) {
+          console.log("Returning cached timetable due to API failure.");
+          this.timetable = JSON.parse(cachedTimetable.data);
+          return this.timetable;
+        } else {
+          this.timetable = { error: true };
+          return this.timetable;
+        }
+      }
+      const updatedTimetable = {
         id,
         type,
         name,
         data: JSON.stringify(this.timetable)
-      });
+      };
+      timetables = timetables.filter((timetable) => timetable.id != id);
+      timetables.push(updatedTimetable);
       localStorage.timetables = JSON.stringify(timetables);
       return this.timetable;
     }
@@ -415,8 +413,7 @@
     }
     getLanguage() {
       let lang = this.getCookie("lang");
-      if (!lang)
-        return null;
+      if (!lang) return null;
       return lang;
     }
     getCookie(name) {
@@ -464,8 +461,7 @@
     }
     clear() {
       let lToClearCache = document.querySelector("#l-toClearCache");
-      if (!confirm(lToClearCache.innerHTML))
-        return;
+      if (!confirm(lToClearCache.innerHTML)) return;
       localStorage.clear();
       this.deleteAllCookies();
       window.location.reload();
@@ -517,8 +513,7 @@
       this.popupDateEl.value = date;
     }
     getTimeString(time) {
-      if (!time)
-        return "--:--";
+      if (!time) return "--:--";
       let hours = time.getHours();
       let minutes = time.getMinutes();
       hours = this.validateTimeValue(hours);
@@ -526,8 +521,7 @@
       return `${hours}:${minutes}`;
     }
     getDateString(date) {
-      if (!date)
-        return "";
+      if (!date) return "";
       let year = date.getFullYear();
       let month = date.getMonth() + 1;
       let day = date.getDate();
@@ -559,8 +553,7 @@
     close() {
       if (this.popupNameEl.value.length > 0 || this.popupDescriptionEl.value.length > 0) {
         let lUnsavedData = document.querySelector("#l-unsavedData");
-        if (!confirm(lUnsavedData.innerHTML))
-          return;
+        if (!confirm(lUnsavedData.innerHTML)) return;
       }
       super.close();
       this.calendar.unselect();
@@ -646,14 +639,12 @@
       if (info.event.extendedProps.description || info.event.extendedProps.description == "") {
         this.popupDescriptionEl.innerHTML = info.event.extendedProps.description;
       }
-      if (info.event.allDay)
-        return;
+      if (info.event.allDay) return;
       this.popupTimeEl.innerHTML = `${this.getTimeString(info.event.start)}&nbsp;&mdash;&nbsp;${this.getTimeString(info.event.end)}`;
       this.popupDateEl.innerHTML = this.getDateString(info.event.start);
     }
     getTimeString(time) {
-      if (!time)
-        return "--:--";
+      if (!time) return "--:--";
       let hours = time.getHours();
       let minutes = time.getMinutes();
       hours = this.validateTimeValue(hours);
@@ -661,8 +652,7 @@
       return `${hours}:${minutes}`;
     }
     getDateString(date) {
-      if (!date)
-        return "";
+      if (!date) return "";
       let year = date.getFullYear();
       let month = date.getMonth() + 1;
       let day = date.getDate();
@@ -679,8 +669,7 @@
       super.close();
     }
     delete() {
-      if (!confirm(this.pageCalendar.locale.toDelete))
-        return;
+      if (!confirm(this.pageCalendar.locale.toDelete)) return;
       this.storage.updateCustomEvent(null, this.info.event);
       this.info.event.remove();
       this.close();
@@ -796,8 +785,7 @@
       let events = this.storage.getCustomEvents();
       let filters = this.storage.getFilters();
       events.forEach(async (event) => {
-        if (filters && filters.includes("custom_event"))
-          return;
+        if (filters && filters.includes("custom_event")) return;
         let calendarEvent = this.calendar.addEvent(event);
         calendarEvent.setProp("editable", true);
       });
@@ -812,8 +800,7 @@
       let parser = new Parser(this.timetable);
       let type = parser.getTypeById(event.type);
       let filters = this.storage.getFilters();
-      if (filters && filters.includes(type.type))
-        return;
+      if (filters && filters.includes(type.type)) return;
       let subject = parser.getSubjectById(event.subject_id);
       let auditory = event.auditory;
       let color = parser.getColorByType(type.short_name);
@@ -886,11 +873,9 @@
       let parser = new Parser(this.timetable);
       if (this.calendar.currentData.currentViewType == "timeGridDay") {
         this.calendar.getEvents().forEach((event) => {
-          if (event.start.toDateString() != new Date().toDateString())
-            return;
+          if (event.start.toDateString() != (/* @__PURE__ */ new Date()).toDateString()) return;
           let properties = event.extendedProps;
-          if (properties.fullDataView == "true")
-            return;
+          if (properties.fullDataView == "true") return;
           let groups = "";
           let teachers = "";
           properties.teachers.forEach((id) => {
@@ -910,8 +895,7 @@ ${currentLesson}/${lessonsCount}`;
         });
       } else {
         this.calendar.getEvents().forEach((event) => {
-          if (event.extendedProps.fullDataView != "true")
-            return;
+          if (event.extendedProps.fullDataView != "true") return;
           event.setProp("title", `${event.extendedProps.subject.brief} ${event.extendedProps.type.short_name} ${event.extendedProps.auditory}`);
           event.setExtendedProp("fullDataView", "false");
         });
@@ -934,8 +918,7 @@ ${currentLesson}/${lessonsCount}`;
       this.clearOptions();
       timetables.forEach((timetable) => {
         let option = createOption(timetable.name, timetable.id, timetable.type);
-        if (option == null)
-          return;
+        if (option == null) return;
         this.select.append(option);
       });
     }
@@ -963,8 +946,7 @@ ${currentLesson}/${lessonsCount}`;
       onSelected = callback;
     }
     getFirstOption() {
-      if (!this.select.options[1])
-        return null;
+      if (!this.select.options[1]) return null;
       return {
         id: this.select.options[1].dataset.id,
         name: this.select.options[1].innerHTML,
@@ -972,8 +954,7 @@ ${currentLesson}/${lessonsCount}`;
       };
     }
     createOption(name, id, type) {
-      if (!name || !id || !type)
-        return null;
+      if (!name || !id || !type) return null;
       let option = document.createElement("option");
       option.innerHTML = name;
       option.dataset.id = id;
@@ -993,8 +974,7 @@ ${currentLesson}/${lessonsCount}`;
     onListClick(event) {
       event.preventDefault();
       const listItem = event.target;
-      if (!listItem.className.includes("list-item"))
-        return;
+      if (!listItem.className.includes("list-item")) return;
       if (!listItem.className.includes("list-item-selected")) {
         listItem.classList.add("list-item-selected");
         let type = this.popupListEl.dataset.type;
@@ -1019,16 +999,14 @@ ${currentLesson}/${lessonsCount}`;
       this.popupListEl.dataset.type = type;
       let counter = 0;
       items.forEach((item) => {
-        if (!item)
-          return;
+        if (!item) return;
         let name;
         if (!item.name) {
           name = item.short_name;
         } else {
           name = item.name;
         }
-        if (!name.toLowerCase().includes(this.searchString))
-          return;
+        if (!name.toLowerCase().includes(this.searchString)) return;
         let listItem = document.createElement("div");
         listItem.className = "list-item";
         listItem.innerHTML = name;
@@ -1043,8 +1021,7 @@ ${currentLesson}/${lessonsCount}`;
     }
     checkIfSelected(listItem) {
       this.selected.forEach((item) => {
-        if (item.type != this.popupListEl.dataset.type)
-          return;
+        if (item.type != this.popupListEl.dataset.type) return;
         if (item.id == listItem.dataset.id) {
           listItem.classList.add("list-item-selected");
         }
@@ -1083,8 +1060,7 @@ ${currentLesson}/${lessonsCount}`;
     }
     close() {
       super.close();
-      if (!this.listController)
-        return;
+      if (!this.listController) return;
       this.listController.setSearch("");
     }
     save() {
@@ -1119,8 +1095,7 @@ ${currentLesson}/${lessonsCount}`;
     onTabClick(event) {
       event.preventDefault();
       const tabItem = event.target;
-      if (!tabItem.className.includes("tab-header-item"))
-        return;
+      if (!tabItem.className.includes("tab-header-item")) return;
       this.removeTabSelection();
       tabItem.classList.add("active");
       this.loadList(tabItem.dataset.tab);
@@ -1159,8 +1134,7 @@ ${currentLesson}/${lessonsCount}`;
     }
     isEnabled() {
       let isEnabled = this.storage.getDarkTheme();
-      if (isEnabled == null)
-        isEnabled = false;
+      if (isEnabled == null) isEnabled = false;
       return isEnabled;
     }
     onLoad() {
@@ -1200,15 +1174,12 @@ ${currentLesson}/${lessonsCount}`;
     disable() {
       let darkStyle = document.querySelectorAll("#darkCSS");
       let darkLink = document.querySelector('link[href="css/dark.css"]');
-      if (darkLink != null)
-        darkLink.remove();
-      if (darkStyle != null)
-        darkStyle.forEach((el) => el.remove());
+      if (darkLink != null) darkLink.remove();
+      if (darkStyle != null) darkStyle.forEach((el) => el.remove());
     }
     async getDarkCSS() {
       let css = this.storage.getDarkCSS();
-      if (css != null)
-        return css;
+      if (css != null) return css;
       let res = await fetch("css/dark.css");
       css = await res.text();
       this.storage.saveDarkCSS(css);
@@ -1230,14 +1201,12 @@ ${currentLesson}/${lessonsCount}`;
       super.open(event);
       this.checkboxesEl.innerHTML = "";
       let selectedId = this.storage.getSelected();
-      if (!selectedId)
-        return;
+      if (!selectedId) return;
       let timetable = await this.storage.getTimetable(selectedId);
       let filters = this.storage.getFilters();
       let types = timetable.types;
       let filterTypes = [];
-      if (!types)
-        return;
+      if (!types) return;
       for (let i = 0; i < types.length; i++) {
         let type = types[i];
         if (!filterTypes.includes(type.type)) {
@@ -1263,22 +1232,20 @@ ${currentLesson}/${lessonsCount}`;
         this.checkboxesEl.append(checkbox);
       }
     }
+    // Получаем названия фильтра из html с учётом локализации
     getLessonName(type) {
       let nameEl = document.querySelector(`#${type}`);
-      if (nameEl == null)
-        return type;
+      if (nameEl == null) return type;
       return nameEl.innerHTML;
     }
     getUnselected() {
       let unselected = [];
       for (let i = 0; i < this.checkboxesEl.children.length; i++) {
         let checkbox = this.checkboxesEl.children[i];
-        if (checkbox.className.includes("d-none"))
-          continue;
+        if (checkbox.className.includes("d-none")) continue;
         let label = checkbox.children[0];
         let input = label.children[0];
-        if (input.checked)
-          continue;
+        if (input.checked) continue;
         unselected.push(input.value);
       }
       return unselected;
@@ -1333,14 +1300,12 @@ ${currentLesson}/${lessonsCount}`;
       if (this.authError()) {
         history.pushState(null, null, "/");
         let lAuthError = document.querySelector("#l-authError");
-        if (lAuthError == null)
-          return;
+        if (lAuthError == null) return;
         alert(lAuthError.innerHTML);
       }
     }
     check() {
-      if (this.storage.getAuth() == null)
-        return false;
+      if (this.storage.getAuth() == null) return false;
       return true;
     }
     onAuth() {
@@ -1365,8 +1330,7 @@ ${currentLesson}/${lessonsCount}`;
     }
     authError() {
       const search = window.location.search;
-      if (search && search.includes("auth") && search.includes("error"))
-        return true;
+      if (search && search.includes("auth") && search.includes("error")) return true;
       return false;
     }
     getAuthURL() {
@@ -1427,7 +1391,7 @@ ${currentLesson}/${lessonsCount}`;
       new PopupLanguage(".cd-popup-language", ".cd-popup-language-trigger");
       this.popupAdd.addOpenSelect(".timetable-select", 0);
     }
-    async loadTimetable(id) {
+    async loadTimetable(id, reload = false) {
       let timetable;
       if (this.auth.check()) {
         this.calendarContainer.classList.remove("d-none");
@@ -1443,7 +1407,7 @@ ${currentLesson}/${lessonsCount}`;
       }
       this.storage.saveSelected(id);
       this.calendar.removeEvents();
-      timetable = await this.storage.getTimetable(id);
+      timetable = await this.storage.getTimetable(id, reload);
       if (timetable.error) {
         this.preloader.stop();
         this.ttUnavailable = document.querySelector("#timetable-unavailable");
@@ -1464,16 +1428,13 @@ ${currentLesson}/${lessonsCount}`;
     }
     onFiltersSavedCallback(filters) {
       let selected = this.storage.getSelected();
-      if (!selected)
-        return;
+      if (!selected) return;
       this.loadTimetable(selected);
     }
     onReloadButton() {
       let selected = this.storage.getSelected();
-      if (!selected)
-        return;
-      this.storage.deleteCacheById(selected);
-      this.loadTimetable(selected);
+      if (!selected) return;
+      this.loadTimetable(selected, true);
     }
     onPrintButton() {
       window.print();

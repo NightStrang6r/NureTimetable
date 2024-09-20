@@ -5,59 +5,58 @@ class BL {
     constructor() {
         this.API = new API();
 
+        this.updateInterval = 14400000; // 4 hours
+        this.timetableExpiry = 14400000; // 4 hours
+
         this.getGroups();
         this.getTeachers();
         this.getAudiences();
 
-        this.saveAllTimetables();
+        this.cacheAllTimetables();
+
+        setInterval(() => {
+            this.cacheAllTimetables();
+        }, this.updateInterval);
     }
 
-    async saveAllTimetables() {
+    async cacheAllTimetables() {
         let groups = await global.db.getGroups();
         let teachers = await global.db.getTeachers();
         let audiences = await global.db.getAudiences();
-
-        /*for (let i = groups.length - 1; i > 0; i--) {
-            const j = Math.floor(Math.random() * (i + 1));
-            [groups[i], groups[j]] = [groups[j], groups[i]];
-        }*/
-
+    
         console.log(c.green('Caching timetables...'));
-
-        for(let i = 0; i < groups.length; i++) {
-            let res = await this.getTimetable(groups[i].id, 'groups');
-
-            if(res.error) {
-                console.log(c.cyan(`Error while caching timetable for group ${groups[i].name}: ${res.data}`));
-                if(res.data == 'Invalid timetable') global.db.setGroupValidTimetable(groups[i].id, false);
-            }
-            
-            await this.sleep(5000);
+    
+        const delay = (ms) => new Promise(resolve => setTimeout(resolve, ms));
+    
+        for (let group of groups) {
+            await this.cacheTimetable(group, 'groups', 'name', 'setGroupValidTimetable');
+            await delay(5000);
         }
-
-        for(let i = 0; i < teachers.length; i++) {
-            let res = await this.getTimetable(teachers[i].id, 'teachers');
-
-            if(res.error) {
-                console.log(c.cyan(`Error while caching timetable for teacher ${teachers[i].full_name}: ${res.data}`));
-                if(res.data == 'Invalid timetable') global.db.setTeacherValidTimetable(teachers[i].id, false);
-            }
-
-            await this.sleep(5000);
+    
+        for (let teacher of teachers) {
+            await this.cacheTimetable(teacher, 'teachers', 'full_name', 'setTeacherValidTimetable');
+            await delay(5000);
         }
-
-        for(let i = 0; i < audiences.length; i++) {
-            let res = await this.getTimetable(audiences[i].id, 'audiences');
-
-            if(res.error) {
-                console.log(c.cyan(`Error while caching timetable for audience ${audiences[i].short_name}: ${res.data}`));
-                if(res.data == 'Invalid timetable') global.db.setAudienceValidTimetable(audiences[i].id, false);
-            }
-            
-            await this.sleep(5000);
+    
+        for (let audience of audiences) {
+            await this.cacheTimetable(audience, 'audiences', 'short_name', 'setAudienceValidTimetable');
+            await delay(5000);
         }
-
+    
         console.log(c.green('All timetables cached.'));
+    }
+    
+    async cacheTimetable(entity, entityType, nameField, validTimetableSetter) {
+        let res = await this.getTimetable(entity.id, entityType);
+    
+        if (res.error) {
+            console.log(c.cyan(`Timetable for ${entityType.slice(0, -1)} ${entity[nameField]}: ${res.data}`));
+            if (res.data === 'Invalid timetable') {
+                global.db[validTimetableSetter](entity.id, false);
+            }
+        } else {
+            console.log(c.green(`Timetable for ${entityType.slice(0, -1)} ${entity[nameField]} cached.`));
+        }
     }
 
     async getTimetable(id, typeName) {
@@ -68,7 +67,7 @@ class BL {
         let timetable = await global.db.getTimetable(id, typeId);
 
         if(timetable && timetable.data) {
-            if ((new Date() - new Date(timetable.update_date)) < 14400000) {
+            if ((new Date() - new Date(timetable.update_date)) < this.timetableExpiry) {
                 global.db.incrementTimetableReqCount(id, typeId);
                 return { data: timetable.data, error: false };
             }

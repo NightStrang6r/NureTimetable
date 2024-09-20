@@ -12,7 +12,7 @@ global.storage = storage;
 
 let logger = new Logger();
 let db = new DB();
-let server = new Server(3000);
+let server = new Server(storage.config.port);
 global.db = db;
 
 logger.printLogo();

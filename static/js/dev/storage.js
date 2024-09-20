@@ -190,56 +190,70 @@ export default class Storage {
         localStorage.timetables = JSON.stringify(timetables);
     }
 
-    // Возвращает расписание по id с учётом возможного кэша
     async getTimetable(id, reload = false) {
         // Получаем кэш расписаний из localStorage
         let timetables = this.getTimetables();
+        let cachedTimetable = null;
         let type, name;
-
-        // Если кэш не пуст
-        if(timetables.length > 0) {
-            for(let i = 0; i < timetables.length; i++) {
-                let timetable = timetables[i];
     
-                // Находим нужное расписание
-                if(timetable.id == id) {
-                    // Если кэша нет, выходим
-                    if(!timetable.data) {
-                        type = timetable.type;
-                        name = timetable.name;
-                        timetables.splice(i, 1);
-                        break;
-                    } else if(reload) {
-                        delete timetable.data;
-                        break;
-                    }
-
-                    this.timetable = JSON.parse(timetable.data);
+        // Проверяем наличие расписания в кэше
+        if (timetables.length > 0) {
+            cachedTimetable = timetables.find(timetable => timetable.id == id);
+    
+            // Если расписание найдено в кэше и не указан флаг reload
+            if (cachedTimetable && !reload) {
+                if (cachedTimetable.data) {
+                    // Возвращаем кэшированное расписание
+                    this.timetable = JSON.parse(cachedTimetable.data);
                     return this.timetable;
                 }
             }
         }
-
-        // Если кэша нет, используем API
-        this.timetable = await api.getTimetable(id, type);
-
-        if(!this.timetable) {
-            this.timetable = {};
-            this.timetable.error = true;
-            return this.timetable;
+    
+        // Если кэша нет или указан reload, делаем запрос к API
+        if (cachedTimetable) {
+            // Получаем тип и имя из кэша для использования в запросе
+            type = cachedTimetable.type;
+            name = cachedTimetable.name;
         }
-
-        // Готовим массив для кэша
-        timetables.push({
-            id: id, 
+    
+        // Пытаемся получить данные с API
+        try {
+            const response = await api.getTimetable(id, type);
+            if (!response) throw new Error("API request failed.");
+            this.timetable = response;
+        } catch (error) {
+            console.log(`Error fetching timetable from API: ${error}`);
+        }
+    
+        // Если запрос не удался или данные пусты, возвращаем кэшированные данные (если есть)
+        if (!this.timetable || this.timetable.error) {
+            if (cachedTimetable && cachedTimetable.data) {
+                console.log("Returning cached timetable due to API failure.");
+                this.timetable = JSON.parse(cachedTimetable.data);
+                return this.timetable;
+            } else {
+                // Если нет кэшированных данных, возвращаем ошибку
+                this.timetable = { error: true };
+                return this.timetable;
+            }
+        }
+    
+        // Если запрос успешен, обновляем/добавляем расписание в кэш
+        const updatedTimetable = {
+            id: id,
             type: type,
             name: name,
             data: JSON.stringify(this.timetable)
-        });
-
-        // Записываем в кэш
+        };
+    
+        // Обновляем кэш: удаляем старое расписание, если оно было
+        timetables = timetables.filter(timetable => timetable.id != id);
+        timetables.push(updatedTimetable);
+    
+        // Сохраняем обновленный кэш
         localStorage.timetables = JSON.stringify(timetables);
-
+    
         return this.timetable;
     }
 
